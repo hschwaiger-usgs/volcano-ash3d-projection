@@ -73,9 +73,9 @@
       elseif(PJ_ilatlonflag.eq.0)then
         ! coordinates are projected, read the projection flag
         read(linebuffer,*)PJ_ilatlonflag,PJ_iprojflag
-        if(PJ_iprojflag.ne.1.and.PJ_iprojflag.ne.2.and. &
-           PJ_iprojflag.ne.3.and.PJ_iprojflag.ne.4.and. &
-           PJ_iprojflag.ne.5) then
+        if(PJ_iprojflag.ne.0.and.PJ_iprojflag.ne.1.and. &
+           PJ_iprojflag.ne.2.and.PJ_iprojflag.ne.3.and. &
+           PJ_iprojflag.ne.4.and.PJ_iprojflag.ne.5) then
           write(0,*)"Unrecognized projection flag"
           stop 1
         endif
@@ -85,8 +85,21 @@
         stop 1
       endif
 
-
       select case (PJ_iprojflag)
+
+      case(0)
+        ! Non-geographic projection, (x,y) only
+      PJ_k0           = 0.0_8
+      PJ_radius_earth = 6371.229_8
+      PJ_lam0         = 0.0_8
+      PJ_lam1         = 0.0_8
+      PJ_lam2         = 0.0_8
+      PJ_phi0         = 0.0_8
+      PJ_phi1         = 0.0_8
+      PJ_phi2         = 0.0_8
+
+      write(*,*)"Both PJ_ilatlonflag and PJ_iprojflag are 0"
+      write(*,*)"No geographic projection used"
 
       case(1)
         ! Polar stereographic
@@ -337,7 +350,13 @@
         lon_0_wrap = lon_0 
       endif
 
-      if (iprojflag.eq.1) then
+      if (iprojflag.eq.0) then
+        write(0,*)&
+        'PJ: PJ_proj_for was called for non-geographic coordinates'
+        write(0,*)&
+        '    Check the calling program.'
+        stop 1
+      elseif (iprojflag.eq.1) then
         ! Polar stereographic
         !    http://mathworld.wolfram.com/StereographicProjection.html
         if (lat_0.lt.90.0_8) then  !	NOTE: this projection only works if lat_0=90.
@@ -398,7 +417,8 @@
         y_out = earth_R*(log(tan(tmp_arg)))*k_eq
       else
         write(0,*)&
-        'sorry, iprojflag is not 1,2,3,4, or 5.  I dont know what to do'
+        'PJ: sorry, iprojflag is not 1,2,3,4, or 5.  I dont know what to do'
+        stop 0
       endif
 
          return
@@ -451,7 +471,13 @@
         lon_0_wrap = lon_0
       endif
 
-      if (iprojflag.eq.1) then
+      if (iprojflag.eq.0) then
+        write(0,*)&
+        'PJ: PJ_proj_for was called for non-geographic coordinates'
+        write(0,*)&
+        '    Check the calling program.'
+        stop 1
+      elseif (iprojflag.eq.1) then
         ! Polar stereographic
         !    http://mathworld.wolfram.com/StereographicProjection.html
         if (lat_0.lt.90.0_8) then  !	NOTE: this projection only works if lat_0=90.
@@ -519,6 +545,7 @@
       else
         write(0,*) &
         'sorry, iprojflag is not 1,2,3,4, or 5.  I dont know what to do'
+        stop 1
       endif
 
       ! Lastly, convert output longitude to the range 0<lon<=360
