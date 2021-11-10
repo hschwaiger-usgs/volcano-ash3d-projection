@@ -234,8 +234,8 @@
         endif
 
         ! Preparing parameter list for projection call
-        write(buffer,231);              params(1) = buffer
-        write(buffer,232)PJ_lam0;       params(2) = buffer
+        write(buffer,231);                 params(1) = buffer
+        write(buffer,232)PJ_lam0;          params(2) = buffer
         write(buffer,233)PJ_phi0;          params(3) = buffer
         write(buffer,234)PJ_phi1;          params(4) = buffer
         write(buffer,235)PJ_phi2;          params(5) = buffer
@@ -327,7 +327,7 @@
       real(kind=8)  :: lon_in_wrap ! Locally-used lon values that are wrapped
       real(kind=8)  :: lon_0_wrap !  to the range 0-360
 
-      real(kind=8) :: k_eq
+      real(kind=8) :: k_eq,k_s
       real(kind=8) :: F
       real(kind=8) :: tmp_arg
       real(kind=8) :: n_exp
@@ -359,22 +359,48 @@
       elseif (iprojflag.eq.1) then
         ! Polar stereographic
         !    http://mathworld.wolfram.com/StereographicProjection.html
-        if (lat_0.lt.90.0_8) then  !	NOTE: this projection only works if lat_0=90.
-          write(0,3)
+        ! Parameters required:
+        !   lon_0 = central longitude (only longitude that coindices with a j-column
+        !   lat_0 = lat of projection origin (only 90.0 or -90.0 allowed)
+        !   lat_1 = truelat (latitude where the projection plane intesects globe (usually 90 or -90))
+        !   k_0   = scale factor
+        !   earth_R = radius of spherical Earth
+        if (abs(lat_0).lt.90.0_8) then  !  NOTE: this projection only works if lat_0=+-90.
+          write(0,3)lat_0
 3         format('Sorry, lproj only works for polar stereographic',/, &
-                         'projection when lat_0=90.',/, &
+                         'projection when lat_0=+-90.',/, &
+                         'lat_0 = ',f15.4,/, &
                          'Program stopped.')
           stop 1
         endif
+        if (abs(lat_1-lat_0).gt.0.01_8)then
+          ! A true latitude is given instead of k_0; overwriting k_0
+          k_s=(1.0_8-sin(lat_1*DEG2RAD))*0.5_8
+        else
+          k_s = k_0
+        endif
 
-          ! Using Eq. 21-5 and 21.6 of Snyder, 1987
-        zproj   = k_0*2.0_8*earth_R
-        theta   = (lon_in_wrap-lon_0_wrap)*DEG2RAD
-        if (theta.le.-PI) theta = theta + 2.0_8*PI
-        if (theta.gt. PI) theta = theta - 2.0_8*PI
-        x_out =  zproj*tan(0.25_8*PI-0.5_8*lat_in*DEG2RAD)*sin(theta)
-        y_out = -zproj*tan(0.25_8*PI-0.5_8*lat_in*DEG2RAD)*cos(theta)
-
+        if (lat_0.gt.0.0_8)then
+          ! North Polar Sterographic projection
+            ! Using Eq. 21-5 and 21.6 of Snyder, 1987
+            ! (https://pubs.er.usgs.gov/publication/pp1395)
+          zproj   = k_s*2.0_8*earth_R
+          theta   = (lon_in_wrap-lon_0_wrap)*DEG2RAD
+          if (theta.le.-PI) theta = theta + 2.0_8*PI
+          if (theta.gt. PI) theta = theta - 2.0_8*PI
+          x_out =  zproj*tan(0.25_8*PI-0.5_8*lat_in*DEG2RAD)*sin(theta)
+          y_out = -zproj*tan(0.25_8*PI-0.5_8*lat_in*DEG2RAD)*cos(theta)
+        else
+          ! South Polar Sterographic projection
+            ! Using Eq. 21-9 and 21.10 of Snyder, 1987
+            ! (https://pubs.er.usgs.gov/publication/pp1395)
+          zproj   = k_s*2.0_8*earth_R
+          theta   = (lon_in_wrap-lon_0_wrap)*DEG2RAD
+          if (theta.le.-PI) theta = theta + 2.0_8*PI
+          if (theta.gt. PI) theta = theta - 2.0_8*PI
+          x_out =  zproj*tan(0.25_8*PI+0.5_8*lat_in*DEG2RAD)*sin(theta)
+          y_out =  zproj*tan(0.25_8*PI+0.5_8*lat_in*DEG2RAD)*cos(theta)
+        endif
       elseif (iprojflag.eq.2) then
         ! Albers Equal Area
         write(0,*)"WARNING: Albers not yet verified"
@@ -456,7 +482,7 @@
 
       real(kind=8)  ::  lon_0_wrap !  to the range 0-360
 
-      real(kind=8) :: k_eq
+      real(kind=8) :: k_eq,k_s
       real(kind=8) :: F
       real(kind=8) :: tmp_arg
       real(kind=8) :: n_exp,rho,rho_0,theta
@@ -480,26 +506,42 @@
       elseif (iprojflag.eq.1) then
         ! Polar stereographic
         !    http://mathworld.wolfram.com/StereographicProjection.html
-        if (lat_0.lt.90.0_8) then  !	NOTE: this projection only works if lat_0=90.
+        if (abs(lat_0).lt.90.0_8) then  !  NOTE: this projection only works if lat_0=+-90.
           write(0,3)
 3         format('Sorry, lproj only works for polar stereographic',/, &
-                         'projection when lat_0=90.',/, &
+                         'projection when lat_0=+-90.',/, &
+                         'lat_0 = ',f15.4,/, &
                          'Program stopped.')
           stop 1
         endif
+        if (abs(lat_1-lat_0).gt.0.01_8)then
+          ! A true latitude is given instead of k_0; overwriting k_0
+          k_s=(1.0_8-sin(lat_1*DEG2RAD))*0.5_8
+        else
+          k_s = k_0
+        endif
 
-        theta   = atan2(x_in,-y_in)
-          ! Eq 20-16 of Snyder, 1987
+        if (lat_0.gt.0.0_8)then
+          ! North Polar Sterographic projection
+          theta   = atan2(x_in,-y_in)  ! Eq 20-16 of Snyder, 1987
+        else
+          ! South Polar Sterographic projection
+          theta   = atan2(x_in,y_in)   ! Eq 20-17 of Snyder, 1987
+        endif
+
         lon_out = theta*RAD2DEG + lon_0_wrap
-          ! Eq 20-18 of Snyder, 1987 (p159)
-        rho   = sqrt(x_in*x_in+y_in*y_in)
-          ! Eq. 21-15 of Snyder, 1987 (p159)
-        c_fac = 2.0_8*atan2(rho,k_0*2.0_8*earth_R)
-          ! Eq. 20-14 of Snyder, 1987 (p158)
-        !lat_out = asin(     cos(c_fac)*sin(lat_0*DEG2RAD) + &
-        !               y_in*sin(c_fac)*cos(lat_0*DEG2RAD)/rho)
-        lat_out = asin(     cos(c_fac)) * RAD2DEG
-
+        rho   = sqrt(x_in*x_in+y_in*y_in)          ! Eq 20-18 of Snyder, 1987 (p159)
+        c_fac = 2.0_8*atan2(rho,k_s*2.0_8*earth_R) ! Eq 21-15 of Snyder, 1987 (p159)
+            ! Eq. 20-14 of Snyder, 1987 (p158)
+          !lat_out = asin(     cos(c_fac)*sin(lat_0*DEG2RAD) + &
+          !               y_in*sin(c_fac)*cos(lat_0*DEG2RAD)/rho)
+        if (lat_0.gt.0.0_8)then
+          ! North Polar Sterographic projection
+          lat_out = asin(     cos(c_fac)) * RAD2DEG
+        else
+          ! South Polar Sterographic projection
+          lat_out = -1.0_8*asin(     cos(c_fac)) * RAD2DEG
+        endif
         if (lon_out.lt.  0.0_8) lon_out=lon_out+360.0_8
         if (lon_out.gt.360.0_8) lon_out=lon_out-360.0_8
 
