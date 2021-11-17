@@ -102,6 +102,8 @@ lib: libprojection.a
 
 tools: project_inv project_for makefile
 	
+check: libprojection.a project_inv project_for makefile
+	./test.sh
 clean:
 	rm -f projection.o
 	rm -f *.mod
