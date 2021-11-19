@@ -97,12 +97,12 @@ For polar stereographic projections, four floating point values are read:
    Examples:  
     NAM grid 196 (2.5 km over HI) :: 0 5 198.475 20.0 6371.229 
 
-The forward and inverse projection tools (project\_for and project\_inv) take command-line
+The forward and inverse projection tools (`project_for` and `project_inv`) take command-line
 arguments as outlined above, except additionally the lon,lat (or x,y) pairs.
 
-For example, for a stereographic projection:
-project\_for lon\_in lat\_in 0 1 lon0 lat0 k0 Re
-project\_inv   x\_in   y\_in 0 1 lon0 lat0 k0 Re
+For example, for a stereographic projection:  
+  `project_for lon_in lat_in 0 1 lon0 lat0 k0 Re`  
+  `project_inv   x_in   y_in 0 1 lon0 lat0 k0 Re`  
 
 The forward projection (from lon,lat to x,y) can be calculated by the subroutine  
   `PJ_proj_for(lon_in,lat_in,iprojflag,lon_0,lat_0,lat_1,lat_2,k_0,earth_R, x_out,y_out)`
