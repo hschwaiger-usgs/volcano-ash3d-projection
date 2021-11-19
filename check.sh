@@ -12,7 +12,7 @@ echo "    NAM 90-km (grids 104)"
 echo "    NAM 45-km (grids 216)"
 ./check_proj4.sh 187.0 30.0 0 1 -135.0 90.0 0.933 6371.229    #Proj flags and params
 ./check_proj4.sh 297.15 70.111 0 1 -135.0 90.0 0.933 6371.229    #Proj flags and params
-echo "    WRF Arntarctic grid"
+echo "    WRF Antarctic grid"
 ./check_proj4.sh 167.1523 -77.5293 0 1 180.0 -90.0 0.972759 6370.0
 echo "-----------------------------------------------------------"
 ###############################################################################

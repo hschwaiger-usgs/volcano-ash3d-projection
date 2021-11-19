@@ -14,6 +14,20 @@ To compile as a library, simple type:
 
   `make`
 
+To compile the library as well as the auxillary tools, type:
+
+  `make all`
+
+This will additionally build the command-line tools project\_for and project\_inv.
+
+To run test on the library, type:
+
+  `make check`
+
+This will run several forward projections and verify that inverse projections
+produce the original input parameters.  Additionaly, the forward projections
+will be tested against the proj4 library.
+
 To install the library and module, edit the `INSTALLDIR` variable of the makefile
 (the default is `/opt/USGS`) and type:
 
@@ -82,6 +96,13 @@ For polar stereographic projections, four floating point values are read:
         `PJ_radius_earth`  
    Examples:  
     NAM grid 196 (2.5 km over HI) :: 0 5 198.475 20.0 6371.229 
+
+The forward and inverse projection tools (project\_for and project\_inv) take command-line
+arguments as outlined above, except additionally the lon,lat (or x,y) pairs.
+
+For example, for a stereographic projection:
+project\_for lon\_in lat\_in 0 1 lon0 lat0 k0 Re
+project\_inv   x\_in   y\_in 0 1 lon0 lat0 k0 Re
 
 The forward projection (from lon,lat to x,y) can be calculated by the subroutine  
   `PJ_proj_for(lon_in,lat_in,iprojflag,lon_0,lat_0,lat_1,lat_2,k_0,earth_R, x_out,y_out)`
