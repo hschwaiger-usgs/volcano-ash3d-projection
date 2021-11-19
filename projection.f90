@@ -141,7 +141,8 @@
 204     format('k_0=',f10.3)
 205     format('R=',f10.3)
 206     format(' ')
-
+        PJ_phi1 = PJ_phi0
+        PJ_phi2 = PJ_phi0
       case(2)
         ! Albers Equal Area
         write(0,*)"WARNING: Albers not yet verified"
