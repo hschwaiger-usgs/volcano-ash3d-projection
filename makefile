@@ -117,8 +117,8 @@ install:
 	install -d $(INSTALLDIR)/bin
 	install -m 644 libprojection.a $(INSTALLDIR)/lib/
 	install -m 644 projection.mod $(INSTALLDIR)/include/
-	install -m -775 project_for $(INSTALLDIR)/bin
-	install -m -775 project_inv $(INSTALLDIR)/bin
+	install -m 775 project_for $(INSTALLDIR)/bin
+	install -m 775 project_inv $(INSTALLDIR)/bin
 
 uninstall:
 	rm -f $(INSTALLDIR)/lib/$(LIB)
