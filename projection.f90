@@ -114,6 +114,8 @@
           write(0,*)"   PJ_phi0 = ",PJ_phi0
           stop 1
         endif
+        PJ_phi1 = PJ_phi0
+        PJ_phi2 = PJ_phi0
         if(PJ_k0.le.0.0)then
           write(0,*)"PJ ERROR:  PJ_k0 should > 0"
           write(0,*)"   PJ_k0 = ",PJ_k0
@@ -141,8 +143,6 @@
 204     format('k_0=',f10.3)
 205     format('R=',f10.3)
 206     format(' ')
-        PJ_phi1 = PJ_phi0
-        PJ_phi2 = PJ_phi0
       case(2)
         ! Albers Equal Area
         write(0,*)"WARNING: Albers not yet verified"
@@ -376,6 +376,7 @@
         endif
         if (abs(lat_1-lat_0).gt.0.01_8)then
           ! A true latitude is given instead of k_0; overwriting k_0
+          write(*,*)"Resetting k_s"
           k_s=(1.0_8-sin(lat_1*DEG2RAD))*0.5_8
         else
           k_s = k_0
