@@ -56,8 +56,8 @@ INSTALLDIR=/opt/USGS
 ifeq ($(SYSTEM), gfortran)
     FCHOME=/usr
     FC = /usr/bin/gfortran
-    COMPINC = -I$(FCHOME)/include -I$(FCHOME)/lib64/gfortran/modules
-    COMPLIBS = -L$(FCHOME)/lib64
+    COMPINC = -I./ -I$(FCHOME)/include -I$(FCHOME)/lib64/gfortran/modules
+    COMPLIBS = -L./ -L$(FCHOME)/lib64
 
     LIBS = $(COMPLIBS) $(COMPINC)
 
@@ -73,6 +73,8 @@ endif
 ifeq ($(RUN), OPT)
     FFLAGS = -O3 -w -fno-math-errno -funsafe-math-optimizations -fno-trapping-math -fno-signaling-nans -fcx-limited-range -fno-rounding-math -fdefault-real-8
 endif
+      # Preprocessing flags
+    FPPFLAGS = -x f95-cpp-input
     EXFLAGS =
 endif
 ###############################################################################
@@ -89,21 +91,38 @@ libprojection.a: projection.f90 projection.o makefile
 	ar rcs libprojection.a projection.o
 projection.o: projection.f90 makefile
 	$(FC) $(FFLAGS) $(EXFLAGS) $(LIBS) -c projection.f90
+project_for: project.F90 libprojection.a  makefile
+	$(FC) $(FPPFLAGS) -DFORWARD $(FFLAGS) $(EXFLAGS) -o project_for project.F90 $(LIBS) -lprojection
+project_inv: project.F90 libprojection.a makefile
+	$(FC) $(FPPFLAGS) -DINVERSE $(FFLAGS) $(EXFLAGS) -o project_inv project.F90 $(LIBS) -lprojection
 
-all: lib
+all: lib tools
 
+lib: libprojection.a
+
+tools: project_inv project_for makefile
+	
+check: libprojection.a project_inv project_for makefile
+	./check.sh
 clean:
 	rm -f projection.o
 	rm -f *.mod
 	rm -f lib*.a
+	rm -f project_for
+	rm -f project_inv
 
 install:
 	install -d $(INSTALLDIR)/lib/
 	install -d $(INSTALLDIR)/include/
+	install -d $(INSTALLDIR)/bin
 	install -m 644 libprojection.a $(INSTALLDIR)/lib/
 	install -m 644 projection.mod $(INSTALLDIR)/include/
+	install -m 775 project_for $(INSTALLDIR)/bin
+	install -m 775 project_inv $(INSTALLDIR)/bin
 
 uninstall:
 	rm -f $(INSTALLDIR)/lib/$(LIB)
 	rm -f $(INSTALLDIR)/include/projection.mod
+	rm -f $(INSTALLDIR)/bin/project_for
+	rm -f $(INSTALLDIR)/bin/project_inv
 

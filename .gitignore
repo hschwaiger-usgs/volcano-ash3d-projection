@@ -1,0 +1,5 @@
+*.o
+*.mod
+libprojection.a
+project_for
+project_inv
