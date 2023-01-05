@@ -57,7 +57,12 @@ then the second integer is read as `PJ_iprojflag`, indicating the projection typ
 Depending on which projection is used, several subsequent floating point numbers
 are read from the string.
 
-
+0. `PJ_iprojflag = 0` (Cartesian)
+This case is not a projection, but allows for a calling program that would normally
+use a projection, to use an arbitrary Cartesian grid, such as a unit square.
+No additional values are read from the 80-character string.
+   Examples:
+    0 0
 
 1. `PJ_iprojflag = 1` (Polar Stereographic)  
 For polar stereographic projections, four floating point values are read:  

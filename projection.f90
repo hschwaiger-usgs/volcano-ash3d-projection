@@ -34,6 +34,8 @@
 
       module projection
 
+#include "PJ_version.h"
+
       character(len=20), dimension(8) :: params
       integer      :: PJ_ilatlonflag
       integer      :: PJ_iprojflag

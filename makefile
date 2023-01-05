@@ -90,6 +90,7 @@ lib: $(LIB)
 libprojection.a: projection.f90 projection.o makefile
 	ar rcs libprojection.a projection.o
 projection.o: projection.f90 makefile
+	./get_version.sh
 	$(FC) $(FFLAGS) $(EXFLAGS) $(LIBS) -c projection.f90
 project_for: project.F90 libprojection.a  makefile
 	$(FC) $(FPPFLAGS) -DFORWARD $(FFLAGS) $(EXFLAGS) -o project_for project.F90 $(LIBS) -lprojection
