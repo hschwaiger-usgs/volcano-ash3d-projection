@@ -313,7 +313,7 @@
 
       real(kind=8), parameter :: PI        = 3.141592653589793_8
       real(kind=8), parameter :: DEG2RAD   = 1.7453292519943295e-2_8
-      real(kind=8), parameter :: RAD2DEG   = 5.72957795130823e1_8
+      !real(kind=8), parameter :: RAD2DEG   = 5.72957795130823e1_8
 
       real(kind=8),intent(in)  :: lon_in    ! input lon to convert
       real(kind=8),intent(in)  :: lat_in    ! input lat to convert
