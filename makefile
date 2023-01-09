@@ -87,11 +87,11 @@ LIB = libprojection.a
 ###############################################################################
 lib: $(LIB)
 
-libprojection.a: projection.f90 projection.o makefile
+libprojection.a: projection.F90 projection.o makefile
 	ar rcs libprojection.a projection.o
-projection.o: projection.f90 makefile
+projection.o: projection.F90 makefile
 	./get_version.sh
-	$(FC) $(FPPFLAGS) $(FFLAGS) $(EXFLAGS) $(LIBS) -c projection.f90
+	$(FC) $(FPPFLAGS) $(FFLAGS) $(EXFLAGS) $(LIBS) -c projection.F90
 project_for: project.F90 libprojection.a  makefile
 	$(FC) $(FPPFLAGS) -DFORWARD $(FFLAGS) $(EXFLAGS) -o project_for project.F90 $(LIBS) -lprojection
 project_inv: project.F90 libprojection.a makefile
