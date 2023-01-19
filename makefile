@@ -63,7 +63,7 @@ ifeq ($(SYSTEM), gfortran)
 
 # Debugging flags
 ifeq ($(RUN), DEBUG)
-    FFLAGS =  -O0 -g3 -Wall -fbounds-check -pedantic -fimplicit-none -Wunderflow -Wuninitialized -ffpe-trap=invalid,zero,overflow -fdefault-real-8 
+    FFLAGS = -O0 -g3 -Wall -Wextra -fimplicit-none  -Wall  -Wline-truncation  -Wcharacter-truncation  -Wsurprising  -Waliasing  -Wimplicit-interface  -Wunused-parameter  -fwhole-file  -fcheck=all  -std=f2008  -pedantic  -fbacktrace -Wunderflow -ffpe-trap=invalid,zero,overflow -fdefault-real-8
 endif
 # Profiling flags
 ifeq ($(RUN), PROF)
@@ -87,10 +87,11 @@ LIB = libprojection.a
 ###############################################################################
 lib: $(LIB)
 
-libprojection.a: projection.f90 projection.o makefile
+libprojection.a: projection.F90 projection.o makefile
 	ar rcs libprojection.a projection.o
-projection.o: projection.f90 makefile
-	$(FC) $(FFLAGS) $(EXFLAGS) $(LIBS) -c projection.f90
+projection.o: projection.F90 makefile
+	./get_version.sh
+	$(FC) $(FPPFLAGS) $(FFLAGS) $(EXFLAGS) $(LIBS) -c projection.F90
 project_for: project.F90 libprojection.a  makefile
 	$(FC) $(FPPFLAGS) -DFORWARD $(FFLAGS) $(EXFLAGS) -o project_for project.F90 $(LIBS) -lprojection
 project_inv: project.F90 libprojection.a makefile
