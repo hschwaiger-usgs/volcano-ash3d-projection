@@ -378,7 +378,7 @@
         endif
         if (abs(lat_1-lat_0).gt.0.01_8)then
           ! A true latitude is given instead of k_0; overwriting k_0
-          write(*,*)"Resetting k_s"
+          !write(*,*)"Resetting k_s"
           k_s=(1.0_8-sin(lat_1*DEG2RAD))*0.5_8
         else
           k_s = k_0

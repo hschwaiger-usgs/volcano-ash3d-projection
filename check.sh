@@ -6,6 +6,7 @@
 # The program 'bc' is required for testing so a hard stop is placed at the
 # beginning of this script if this program is not installed.
 
+rc=0
 echo "Looking for bc"
 which bc > /dev/null
 rc=$((rc + $?))
