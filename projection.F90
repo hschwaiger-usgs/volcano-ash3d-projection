@@ -34,15 +34,24 @@
 
       module projection
 
+      implicit none
+
+        ! Set everything to private by default
+      private
+
+        ! Publicly available subroutines/functions
+      public PJ_Set_Proj_Params,PJ_proj_for,PJ_proj_inv
+
+        ! Publicly available variables
 #include "PJ_version.h"
+      integer     ,public :: PJ_ilatlonflag
+      integer     ,public :: PJ_iprojflag
+      real(kind=8),public :: PJ_k0      != 0.933_ip       ! scale factor
+      real(kind=8),public :: PJ_radius_earth = 6371.229_8
+      real(kind=8),public :: PJ_lam0,PJ_lam1,PJ_lam2
+      real(kind=8),public :: PJ_phi0,PJ_phi1,PJ_phi2
 
       character(len=20), dimension(8) :: params
-      integer      :: PJ_ilatlonflag
-      integer      :: PJ_iprojflag
-      real(kind=8) :: PJ_k0      != 0.933_ip       ! scale factor
-      real(kind=8) :: PJ_radius_earth = 6371.229_8
-      real(kind=8) :: PJ_lam0,PJ_lam1,PJ_lam2
-      real(kind=8) :: PJ_phi0,PJ_phi1,PJ_phi2
 
       contains
 
@@ -59,8 +68,6 @@
 
 
       subroutine PJ_Set_Proj_Params(linebuffer)
-
-      implicit none
 
       character(len=80),intent(in) :: linebuffer
 
@@ -309,8 +316,6 @@
                        iprojflag,lon_0,lat_0,lat_1,lat_2,k_0,earth_R, &
                        x_out,y_out)
 
-      implicit none
-
       real(kind=8), parameter :: PI        = 3.141592653589793_8
       real(kind=8), parameter :: DEG2RAD   = 1.7453292519943295e-2_8
       !real(kind=8), parameter :: RAD2DEG   = 5.72957795130823e1_8
@@ -465,8 +470,6 @@
       subroutine PJ_proj_inv(x_in,y_in, &
                            iprojflag,lon_0,lat_0,lat_1,lat_2,k_0,earth_R, &
                            lon_out,lat_out)
-
-      implicit none
 
       real(kind=8), parameter :: PI        = 3.141592653589793_8
       real(kind=8), parameter :: DEG2RAD   = 1.7453292519943295e-2_8
