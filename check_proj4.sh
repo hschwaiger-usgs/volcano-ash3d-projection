@@ -9,6 +9,7 @@ RED='\033[0;31m'
 GREEN='\033[0;32m'
 NC='\033[0m' # No Color
 
+rc=0
 which proj > /dev/null
 rc=$((rc + $?))
 if [[ "$rc" -gt 0 ]] ; then
