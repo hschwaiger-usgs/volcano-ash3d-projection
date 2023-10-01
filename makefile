@@ -89,7 +89,7 @@ ifeq ($(SYSTEM), ifort)
 
 # Debugging flags
 ifeq ($(RUN), DEBUG)
-    FFLAGS = -g2 -pg -warn all -check all -real-size 32 -check uninit -traceback -ftrapuv -debug all 
+    FFLAGS = -g2 -pg -warn all -check all -real-size 64 -check uninit -traceback -ftrapuv -debug all 
 endif
 # Profiling flags
 ifeq ($(RUN), PROF)
