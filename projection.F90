@@ -74,6 +74,16 @@
       character(len=20) :: buffer
       integer           :: inorth,izone
 
+      ! Initialize values
+      PJ_k0     = 0.0_8
+      PJ_Re     = 6371.229_8
+      PJ_lam0   = 0.0_8
+      PJ_lam1   = 0.0_8
+      PJ_lam2   = 0.0_8
+      PJ_phi0   = 0.0_8
+      PJ_phi1   = 0.0_8
+      PJ_phi2   = 0.0_8
+
       read(linebuffer,*)PJ_ilatlonflag
 
       if(PJ_ilatlonflag.eq.1)then
