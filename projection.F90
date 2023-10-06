@@ -307,7 +307,9 @@
 243     format('lat_ts=',f10.3)
 246     format('R=',f10.3)
 247     format(' ')
-
+      case default
+        write(0,*)"PJ ERROR: Projection must be specified."
+        stop 1
       end select
 
       return
