@@ -1,7 +1,11 @@
 
       program project
 
-      use projection
+      use projection,      only : &
+         PJ_ilatlonflag,PJ_iprojflag,PJ_k0,PJ_lam0,PJ_lam1,PJ_lam2,PJ_phi0,PJ_phi1,PJ_phi2,PJ_Re,&
+           PJ_Set_Proj_Params, &
+           PJ_proj_for, &
+           PJ_proj_inv
 
       implicit none
 
@@ -102,21 +106,21 @@
 
       case(0)
         ! Non-geographic projection, (x,y) only
-      PJ_k0           = 0.0_8
-      PJ_radius_earth = 6371.229_8
-      PJ_lam0         = 0.0_8
-      PJ_lam1         = 0.0_8
-      PJ_lam2         = 0.0_8
-      PJ_phi0         = 0.0_8
-      PJ_phi1         = 0.0_8
-      PJ_phi2         = 0.0_8
+      PJ_k0    = 0.0_8
+      PJ_Re    = 6371.229_8
+      PJ_lam0  = 0.0_8
+      PJ_lam1  = 0.0_8
+      PJ_lam2  = 0.0_8
+      PJ_phi0  = 0.0_8
+      PJ_phi1  = 0.0_8
+      PJ_phi2  = 0.0_8
 
       write(*,*)"Both PJ_ilatlonflag and PJ_iprojflag are 0"
       write(*,*)"No geographic projection used"
 
       case(1)
         ! Polar stereographic
-        !read(linebuffer,*)PJ_ilatlonflag,PJ_iprojflag,PJ_lam0,PJ_phi0,PJ_k0,PJ_radius_earth
+        !read(linebuffer,*)PJ_ilatlonflag,PJ_iprojflag,PJ_lam0,PJ_phi0,PJ_k0,PJ_Re
         if (nargs.lt.8) then
           write(6,*)"Enter lon lat IsLatLon ProjFlag lam0 phi0 k0 radius"
           stop 1
@@ -130,7 +134,7 @@
         call get_command_argument(7, arg, status)
         read(arg,*)PJ_k0
         call get_command_argument(8, arg, status)
-        read(arg,*)PJ_radius_earth
+        read(arg,*)PJ_Re
 
       case(2)
         ! Albers Equal Area
@@ -153,7 +157,7 @@
       case(4)
         ! Lambert conformal conic (NARR, NAM218, NAM221)
         !read(linebuffer,*)PJ_ilatlonflag,PJ_iprojflag,PJ_lam0, &
-        !                  PJ_phi0,PJ_phi1,PJ_phi2,PJ_radius_earth
+        !                  PJ_phi0,PJ_phi1,PJ_phi2,PJ_Re
         if (nargs.lt.9) then
           write(6,*)"Enter lon lat IsLatLon ProjFlag lam0 phi0 phi1 phi2 radius"
           stop 1
@@ -167,11 +171,11 @@
         call get_command_argument(8, arg, status)
         read(arg,*)PJ_phi2
         call get_command_argument(9, arg, status)
-        read(arg,*)PJ_radius_earth
+        read(arg,*)PJ_Re
 
       case(5)
         ! Mercator (NAM196)
-        !read(linebuffer,*)PJ_ilatlonflag,PJ_iprojflag,PJ_lam0,PJ_phi0,PJ_radius_earth
+        !read(linebuffer,*)PJ_ilatlonflag,PJ_iprojflag,PJ_lam0,PJ_phi0,PJ_Rd
         if (nargs.lt.7) then
           write(6,*)"Enter lon lat IsLatLon ProjFlag lam0 phi0 radius"
           stop 1
@@ -181,7 +185,7 @@
         call get_command_argument(6, arg, status)
         read(arg,*)PJ_phi0
         call get_command_argument(7, arg, status)
-        read(arg,*)PJ_radius_earth
+        read(arg,*)PJ_Re
 
       end select
 
@@ -189,18 +193,18 @@
         ! Forward Projection: assumming inx,iny are lon,lat
         call PJ_proj_for(inx,iny, &
                        PJ_iprojflag,&
-                       PJ_lam0,PJ_phi0,PJ_phi1,PJ_phi2,PJ_k0,PJ_radius_earth,&
+                       PJ_lam0,PJ_phi0,PJ_phi1,PJ_phi2,PJ_k0,PJ_Re,&
                        outx,outy)
       else
         ! Inverse Projection: assumming inx,iny are x,y
         call PJ_proj_inv(inx,iny, &
                        PJ_iprojflag,&
-                       PJ_lam0,PJ_phi0,PJ_phi1,PJ_phi2,PJ_k0,PJ_radius_earth,&
+                       PJ_lam0,PJ_phi0,PJ_phi1,PJ_phi2,PJ_k0,PJ_Re,&
                        outx,outy)
       endif
 
       !write(*,*)inx,iny
-      !write(*,*)PJ_iprojflag,PJ_lam0,PJ_phi0,PJ_phi1,PJ_phi2,PJ_k0,PJ_radius_earth
+      !write(*,*)PJ_iprojflag,PJ_lam0,PJ_phi0,PJ_phi1,PJ_phi2,PJ_k0,PJ_Re
 !      write(*,2)outx,outy
 ! 2    format(/2f15.5/)
 

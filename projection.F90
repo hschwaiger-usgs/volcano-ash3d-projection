@@ -34,15 +34,24 @@
 
       module projection
 
+      implicit none
+
+        ! Set everything to private by default
+      private
+
+        ! Publicly available subroutines/functions
+      public PJ_Set_Proj_Params,PJ_proj_for,PJ_proj_inv
+
+        ! Publicly available variables
 #include "PJ_version.h"
+      integer     ,public :: PJ_ilatlonflag
+      integer     ,public :: PJ_iprojflag
+      real(kind=8),public :: PJ_k0      != 0.933_ip       ! scale factor
+      real(kind=8),public :: PJ_Re  = 6371.229_8
+      real(kind=8),public :: PJ_lam0,PJ_lam1,PJ_lam2
+      real(kind=8),public :: PJ_phi0,PJ_phi1,PJ_phi2
 
       character(len=20), dimension(8) :: params
-      integer      :: PJ_ilatlonflag
-      integer      :: PJ_iprojflag
-      real(kind=8) :: PJ_k0      != 0.933_ip       ! scale factor
-      real(kind=8) :: PJ_radius_earth = 6371.229_8
-      real(kind=8) :: PJ_lam0,PJ_lam1,PJ_lam2
-      real(kind=8) :: PJ_phi0,PJ_phi1,PJ_phi2
 
       contains
 
@@ -60,12 +69,20 @@
 
       subroutine PJ_Set_Proj_Params(linebuffer)
 
-      implicit none
-
       character(len=80),intent(in) :: linebuffer
 
       character(len=20) :: buffer
       integer           :: inorth,izone
+
+      ! Initialize values
+      PJ_k0     = 0.0_8
+      PJ_Re     = 6371.229_8
+      PJ_lam0   = 0.0_8
+      PJ_lam1   = 0.0_8
+      PJ_lam2   = 0.0_8
+      PJ_phi0   = 0.0_8
+      PJ_phi1   = 0.0_8
+      PJ_phi2   = 0.0_8
 
       read(linebuffer,*)PJ_ilatlonflag
 
@@ -91,21 +108,21 @@
 
       case(0)
         ! Non-geographic projection, (x,y) only
-      PJ_k0           = 0.0_8
-      PJ_radius_earth = 6371.229_8
-      PJ_lam0         = 0.0_8
-      PJ_lam1         = 0.0_8
-      PJ_lam2         = 0.0_8
-      PJ_phi0         = 0.0_8
-      PJ_phi1         = 0.0_8
-      PJ_phi2         = 0.0_8
+      PJ_k0     = 0.0_8
+      PJ_Re     = 6371.229_8
+      PJ_lam0   = 0.0_8
+      PJ_lam1   = 0.0_8
+      PJ_lam2   = 0.0_8
+      PJ_phi0   = 0.0_8
+      PJ_phi1   = 0.0_8
+      PJ_phi2   = 0.0_8
 
       write(*,*)"Both PJ_ilatlonflag and PJ_iprojflag are 0"
       write(*,*)"No geographic projection used"
 
       case(1)
         ! Polar stereographic
-        read(linebuffer,*)PJ_ilatlonflag,PJ_iprojflag,PJ_lam0,PJ_phi0,PJ_k0,PJ_radius_earth
+        read(linebuffer,*)PJ_ilatlonflag,PJ_iprojflag,PJ_lam0,PJ_phi0,PJ_k0,PJ_Re
         if(abs(PJ_lam0).gt.360.0)then
           write(0,*)"PJ ERROR:  PJ_lam0 should be in in range -360 - 360"
           write(0,*)"   lam0 = ",PJ_lam0
@@ -123,17 +140,17 @@
           write(0,*)"   PJ_k0 = ",PJ_k0
           stop 1
         endif
-        if(PJ_radius_earth.le.5000.0.or.PJ_radius_earth.ge.7000.0)then
-          write(6,*)"PJ ERROR:  PJ_radius_earth should around 6300 km, not ",PJ_radius_earth
+        if(PJ_Re.le.5000.0.or.PJ_Re.ge.7000.0)then
+          write(6,*)"PJ ERROR:  PJ_ should around 6300 km, not ",PJ_Re
           stop 1
         endif
 
         ! Preparing parameter list for projection call
-        write(buffer,201);                 params(1) = buffer
-        write(buffer,202)PJ_lam0;          params(2) = buffer
-        write(buffer,203)PJ_phi0;          params(3) = buffer
-        write(buffer,204)PJ_k0;            params(4) = buffer
-        write(buffer,205)PJ_radius_earth;  params(5) = buffer
+        write(buffer,201);        params(1) = buffer
+        write(buffer,202)PJ_lam0; params(2) = buffer
+        write(buffer,203)PJ_phi0; params(3) = buffer
+        write(buffer,204)PJ_k0;   params(4) = buffer
+        write(buffer,205)PJ_Re;   params(5) = buffer
           ! Fill remaining parameters with blanks
         write(buffer,206)
         params(6) = buffer
@@ -219,7 +236,7 @@
       case(4)
         ! Lambert conformal conic (NARR, NAM218, NAM221)
         read(linebuffer,*)PJ_ilatlonflag,PJ_iprojflag,PJ_lam0, &
-                          PJ_phi0,PJ_phi1,PJ_phi2,PJ_radius_earth
+                          PJ_phi0,PJ_phi1,PJ_phi2,PJ_Re
         if(abs(PJ_lam0).gt.360.0)then
           write(0,*)"PJ ERROR:  PJ_lam0 should be in in range -360 - 360"
           write(0,*)"   PJ_lam0 = ",PJ_lam0
@@ -231,18 +248,18 @@
           write(0,*)"   PJ_phi0,1,2 = ",PJ_phi0,PJ_phi1,PJ_phi2
           stop 1
         endif
-        if(PJ_radius_earth.le.5000.0.or.PJ_radius_earth.ge.7000.0)then
-          write(6,*)"PJ ERROR:  PJ_radius_earth should around 6300 km, not ",PJ_radius_earth
+        if(PJ_Re.le.5000.0.or.PJ_Re.ge.7000.0)then
+          write(6,*)"PJ ERROR:  PJ_ should around 6300 km, not ",PJ_Re
           stop 1
         endif
 
         ! Preparing parameter list for projection call
-        write(buffer,231);                 params(1) = buffer
-        write(buffer,232)PJ_lam0;          params(2) = buffer
-        write(buffer,233)PJ_phi0;          params(3) = buffer
-        write(buffer,234)PJ_phi1;          params(4) = buffer
-        write(buffer,235)PJ_phi2;          params(5) = buffer
-        write(buffer,236)PJ_radius_earth;  params(6) = buffer
+        write(buffer,231);         params(1) = buffer
+        write(buffer,232)PJ_lam0;  params(2) = buffer
+        write(buffer,233)PJ_phi0;  params(3) = buffer
+        write(buffer,234)PJ_phi1;  params(4) = buffer
+        write(buffer,235)PJ_phi2;  params(5) = buffer
+        write(buffer,236)PJ_Re;    params(6) = buffer
           ! Fill remaining parameters with blanks
         write(buffer,237)
         params(7) = buffer
@@ -257,7 +274,7 @@
 
       case(5)
         ! Mercator (NAM196)
-        read(linebuffer,*)PJ_ilatlonflag,PJ_iprojflag,PJ_lam0,PJ_phi0,PJ_radius_earth
+        read(linebuffer,*)PJ_ilatlonflag,PJ_iprojflag,PJ_lam0,PJ_phi0,PJ_Re
         if(abs(PJ_lam0).gt.360.0)then
           write(0,*)"PJ ERROR:  PJ_lam0 should be in in range -360 - 360"
           write(0,*)"   PJ_lam0 = ",PJ_lam0
@@ -269,16 +286,16 @@
           write(0,*)"   PJ_phi0 = ",PJ_phi0
           stop 1
         endif
-        if(PJ_radius_earth.le.5000.0.or.PJ_radius_earth.ge.7000.0)then
-          write(0,*)"PJ ERROR:  PJ_radius_earth should around 6300 km, not ",PJ_radius_earth
+        if(PJ_Re.le.5000.0.or.PJ_Re.ge.7000.0)then
+          write(0,*)"PJ ERROR:  PJ_ should around 6300 km, not ",PJ_Re
           stop 1
         endif
 
         ! Preparing parameter list for projection call
-        write(buffer,241);                 params(1) = buffer
-        write(buffer,242)PJ_lam0;          params(2) = buffer
-        write(buffer,243)PJ_phi0;          params(3) = buffer
-        write(buffer,246)PJ_radius_earth;  params(4) = buffer
+        write(buffer,241);         params(1) = buffer
+        write(buffer,242)PJ_lam0;  params(2) = buffer
+        write(buffer,243)PJ_phi0;  params(3) = buffer
+        write(buffer,246)PJ_Re;    params(4) = buffer
           ! Fill remaining parameters with blanks
         write(buffer,247)
         params(5) = buffer
@@ -290,7 +307,9 @@
 243     format('lat_ts=',f10.3)
 246     format('R=',f10.3)
 247     format(' ')
-
+      case default
+        write(0,*)"PJ ERROR: Projection must be specified."
+        stop 1
       end select
 
       return
@@ -308,8 +327,6 @@
       subroutine PJ_proj_for(lon_in,lat_in, &
                        iprojflag,lon_0,lat_0,lat_1,lat_2,k_0,earth_R, &
                        x_out,y_out)
-
-      implicit none
 
       real(kind=8), parameter :: PI        = 3.141592653589793_8
       real(kind=8), parameter :: DEG2RAD   = 1.7453292519943295e-2_8
@@ -378,7 +395,7 @@
         endif
         if (abs(lat_1-lat_0).gt.0.01_8)then
           ! A true latitude is given instead of k_0; overwriting k_0
-          write(*,*)"Resetting k_s"
+          !write(*,*)"Resetting k_s"
           k_s=(1.0_8-sin(lat_1*DEG2RAD))*0.5_8
         else
           k_s = k_0
@@ -465,8 +482,6 @@
       subroutine PJ_proj_inv(x_in,y_in, &
                            iprojflag,lon_0,lat_0,lat_1,lat_2,k_0,earth_R, &
                            lon_out,lat_out)
-
-      implicit none
 
       real(kind=8), parameter :: PI        = 3.141592653589793_8
       real(kind=8), parameter :: DEG2RAD   = 1.7453292519943295e-2_8

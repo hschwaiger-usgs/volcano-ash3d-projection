@@ -29,6 +29,7 @@
 #    This variable cannot be left blank
 #      
 SYSTEM = gfortran
+#SYSTEM = ifort
 #
 #  RUN specifies which collection of compilation flags that should be run
 #    Current available options are:
@@ -41,6 +42,7 @@ SYSTEM = gfortran
 RUN = OPT
 #
 INSTALLDIR=/opt/USGS
+#INSTALLDIR=$(HOME)/intel
 
 ###############################################################################
 #####  END OF USER SPECIFIED FLAGS  ###########################################
@@ -58,7 +60,6 @@ ifeq ($(SYSTEM), gfortran)
     FC = /usr/bin/gfortran
     COMPINC = -I./ -I$(FCHOME)/include -I$(FCHOME)/lib64/gfortran/modules
     COMPLIBS = -L./ -L$(FCHOME)/lib64
-
     LIBS = $(COMPLIBS) $(COMPINC)
 
 # Debugging flags
@@ -78,6 +79,34 @@ endif
     EXFLAGS =
 endif
 ###############################################################################
+##########  Intel Fortran Compiler  #############################################
+ifeq ($(SYSTEM), ifort)
+    FCHOME = /opt/intel/oneapi/compiler/latest/linux/
+    FC = $(FCHOME)/bin/intel64/ifort
+    COMPINC = -I./ -I$(FCHOME)/include
+    COMPLIBS = -L./ -L$(FCHOME)/lib
+    LIBS = $(COMPLIBS) $(COMPINC)
+
+# Debugging flags
+ifeq ($(RUN), DEBUG)
+    FFLAGS = -g2 -pg -warn all -check all -real-size 64 -check uninit -traceback -ftrapuv -debug all 
+endif
+# Profiling flags
+ifeq ($(RUN), PROF)
+    FFLAGS = -g2 -pg
+endif
+# Production run flags
+ifeq ($(RUN), OPT)
+    FFLAGS = -O3 -ftz -w -ipo
+endif
+
+      # Preprocessing flags
+    FPPFLAGS =  -fpp
+      # Extra flags
+    EXFLAGS =
+endif
+###############################################################################
+
 
 LIB = libprojection.a
 
