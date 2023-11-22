@@ -119,7 +119,7 @@ lib: $(LIB)
 libprojection.a: projection.F90 projection.o makefile
 	ar rcs libprojection.a projection.o
 projection.o: projection.F90 makefile
-	./get_version.sh
+	sh get_version.sh
 	$(FC) $(FPPFLAGS) $(FFLAGS) $(EXFLAGS) $(LIBS) -c projection.F90
 project_for: project.F90 libprojection.a  makefile
 	$(FC) $(FPPFLAGS) -DFORWARD $(FFLAGS) $(EXFLAGS) -o project_for project.F90 $(LIBS) -lprojection
@@ -133,7 +133,7 @@ lib: libprojection.a
 tools: project_inv project_for makefile
 	
 check: libprojection.a project_inv project_for makefile
-	./check.sh
+	sh check.sh
 clean:
 	rm -f projection.o
 	rm -f *.mod
