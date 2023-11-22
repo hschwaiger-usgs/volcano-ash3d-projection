@@ -203,11 +203,6 @@
                        outx,outy)
       endif
 
-      !write(*,*)inx,iny
-      !write(*,*)PJ_iprojflag,PJ_lam0,PJ_phi0,PJ_phi1,PJ_phi2,PJ_k0,PJ_Re
-!      write(*,2)outx,outy
-! 2    format(/2f15.5/)
-
       write(*,*)real(outx,kind=4),real(outy,kind=4)
 
       end program project
