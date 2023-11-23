@@ -1,1 +1,0 @@
-      character(len=40),parameter,public :: PJ_GitComID ='85e5215c7a5bdb4c89f16ae60736d0549b9931a3'
