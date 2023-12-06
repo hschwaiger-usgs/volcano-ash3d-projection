@@ -23,14 +23,20 @@
 #      and its documentation for any purpose.  We assume no responsibility to provide
 #      technical support to users of this software.
 
+#      Sequence of commands:
+#      "make"  compiles the libprojection.a library
+#      "make all" builds the library, and the tools executables
+#      "make check" runs test cases and compares with proj4
+#      "make install" copies the library to the install location
+#                        e.g. /opt/USGS
+#
 #  SYSTEM specifies which compiler to use
 #    Current available options are:
 #      gfortran , ifort , aocc
 #    This variable cannot be left blank
-#      
+#
 SYSTEM = gfortran
-#SYSTEM = ifort
-#SYSTEM = aocc
+SYSINC = make_gfortran.inc
 #
 #  RUN specifies which collection of compilation flags that should be run
 #    Current available options are:
@@ -39,33 +45,22 @@ SYSTEM = gfortran
 #      OPT   : includes optimizations flags for fastest runtime
 #    This variable cannot be left blank
 
-RUN = DEBUG
+#RUN = DEBUG
 #RUN = PROF
-#RUN = OPT
+RUN = OPT
 #
 INSTALLDIR=/opt/USGS
-#INSTALLDIR=$(HOME)/intel
-#INSTALLDIR=$(HOME)/aocc
 
 ###############################################################################
 #####  END OF USER SPECIFIED FLAGS  ###########################################
 ###############################################################################
 
 ###############################################################################
-##########  GNU Fortran Compiler  #############################################
-ifeq ($(SYSTEM), gfortran)
-  include make_gfortran.inc
-endif
-###############################################################################
-##########  Intel Fortran Compiler  ###########################################
-ifeq ($(SYSTEM), ifort)
-  include make_ifort.inc
-endif
-###############################################################################
-##########  AMD Optimizing C/C++/Fortran Compiler (aocc) ######################
-ifeq ($(SYSTEM), aocc)
-  include make_aocc.inc
-endif
+# Import the compiler-specific include file.  Currently one of:
+#  GNU Fortran Compiler
+#  Intel Fortran Compiler
+#  AMD Optimizing C/C++/Fortran Compiler (aocc)
+include $(SYSINC)
 ###############################################################################
 
 LIB = libprojection.a
@@ -75,23 +70,23 @@ LIB = libprojection.a
 ###############################################################################
 lib: $(LIB)
 
-libprojection.a: projection.F90 projection.o makefile
+libprojection.a: projection.F90 projection.o makefile $(SYSINC)
 	ar rcs libprojection.a projection.o
-projection.o: projection.F90 makefile
+projection.o: projection.F90 makefile $(SYSINC)
 	sh get_version.sh
 	$(FC) $(FPPFLAGS) $(FFLAGS) $(EXFLAGS) $(LIBS) -c projection.F90
-project_for: project.F90 libprojection.a  makefile
+project_for: project.F90 libprojection.a  makefile $(SYSINC)
 	$(FC) $(FPPFLAGS) -DFORWARD $(FFLAGS) $(EXFLAGS) -o project_for project.F90 $(LIBS) -lprojection
-project_inv: project.F90 libprojection.a makefile
+project_inv: project.F90 libprojection.a makefile $(SYSINC)
 	$(FC) $(FPPFLAGS) -DINVERSE $(FFLAGS) $(EXFLAGS) -o project_inv project.F90 $(LIBS) -lprojection
 
 all: lib tools
 
 lib: libprojection.a
 
-tools: project_inv project_for makefile
+tools: project_inv project_for makefile $(SYSINC)
 	
-check: libprojection.a project_inv project_for makefile
+check: libprojection.a project_inv project_for makefile $(SYSINC)
 	sh check.sh
 clean:
 	rm -f projection.o
