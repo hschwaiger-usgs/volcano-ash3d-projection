@@ -23,18 +23,26 @@
 #      and its documentation for any purpose.  We assume no responsibility to provide
 #      technical support to users of this software.
 
+#      Sequence of commands:
+#      "make"  compiles the libprojection.a library
+#      "make all" builds the library, and the tools executables
+#      "make check" runs test cases and compares with proj4
+#      "make install" copies the library to the install location
+#                        e.g. /opt/USGS
+#
 #  SYSTEM specifies which compiler to use
 #    Current available options are:
-#      gfortran , ifort
+#      gfortran , ifort , aocc
 #    This variable cannot be left blank
-#      
+#
 SYSTEM = gfortran
-#SYSTEM = ifort
+SYSINC = make_gfortran.inc
 #
 #  RUN specifies which collection of compilation flags that should be run
 #    Current available options are:
 #      DEBUG : includes debugging info and issues warnings
 #      PROF  : includes profiling flags with some optimization
+#      OPT   : includes optimizations flags for fastest runtime
 #    This variable cannot be left blank
 
 #RUN = DEBUG
@@ -42,97 +50,43 @@ SYSTEM = gfortran
 RUN = OPT
 #
 INSTALLDIR=/opt/USGS
-#INSTALLDIR=$(HOME)/intel
 
 ###############################################################################
 #####  END OF USER SPECIFIED FLAGS  ###########################################
 ###############################################################################
 
-
-
 ###############################################################################
+# Import the compiler-specific include file.  Currently one of:
+#  GNU Fortran Compiler
+#  Intel Fortran Compiler
+#  AMD Optimizing C/C++/Fortran Compiler (aocc)
+include $(SYSINC)
 ###############################################################################
-
-###############################################################################
-##########  GNU Fortran Compiler  #############################################
-ifeq ($(SYSTEM), gfortran)
-    FCHOME=/usr
-    FC = /usr/bin/gfortran
-    COMPINC = -I./ -I$(FCHOME)/include -I$(FCHOME)/lib64/gfortran/modules
-    COMPLIBS = -L./ -L$(FCHOME)/lib64
-    LIBS = $(COMPLIBS) $(COMPINC)
-
-# Debugging flags
-ifeq ($(RUN), DEBUG)
-    FFLAGS = -O0 -g3 -Wall -Wextra -fimplicit-none  -Wall  -Wline-truncation  -Wcharacter-truncation  -Wsurprising  -Waliasing  -Wimplicit-interface  -Wunused-parameter  -fwhole-file  -fcheck=all  -std=f2008  -pedantic  -fbacktrace -Wunderflow -ffpe-trap=invalid,zero,overflow -fdefault-real-8
-endif
-# Profiling flags
-ifeq ($(RUN), PROF)
-    FFLAGS = -g -pg -w -fno-math-errno -funsafe-math-optimizations -fno-trapping-math -fno-signaling-nans -fcx-limited-range -fno-rounding-math -fdefault-real-8
-endif
-# Production run flags
-ifeq ($(RUN), OPT)
-    FFLAGS = -O3 -w -fno-math-errno -funsafe-math-optimizations -fno-trapping-math -fno-signaling-nans -fcx-limited-range -fno-rounding-math -fdefault-real-8
-endif
-      # Preprocessing flags
-    FPPFLAGS = -x f95-cpp-input
-    EXFLAGS =
-endif
-###############################################################################
-##########  Intel Fortran Compiler  #############################################
-ifeq ($(SYSTEM), ifort)
-    FCHOME = /opt/intel/oneapi/compiler/latest/linux/
-    FC = $(FCHOME)/bin/intel64/ifort
-    COMPINC = -I./ -I$(FCHOME)/include
-    COMPLIBS = -L./ -L$(FCHOME)/lib
-    LIBS = $(COMPLIBS) $(COMPINC)
-
-# Debugging flags
-ifeq ($(RUN), DEBUG)
-    FFLAGS = -g2 -pg -warn all -check all -real-size 64 -check uninit -traceback -ftrapuv -debug all 
-endif
-# Profiling flags
-ifeq ($(RUN), PROF)
-    FFLAGS = -g2 -pg
-endif
-# Production run flags
-ifeq ($(RUN), OPT)
-    FFLAGS = -O3 -ftz -w -ipo
-endif
-
-      # Preprocessing flags
-    FPPFLAGS =  -fpp
-      # Extra flags
-    EXFLAGS =
-endif
-###############################################################################
-
 
 LIB = libprojection.a
-
 
 ###############################################################################
 # TARGETS
 ###############################################################################
 lib: $(LIB)
 
-libprojection.a: projection.F90 projection.o makefile
+libprojection.a: projection.F90 projection.o makefile $(SYSINC)
 	ar rcs libprojection.a projection.o
-projection.o: projection.F90 makefile
+projection.o: projection.F90 makefile $(SYSINC)
 	sh get_version.sh
 	$(FC) $(FPPFLAGS) $(FFLAGS) $(EXFLAGS) $(LIBS) -c projection.F90
-project_for: project.F90 libprojection.a  makefile
+project_for: project.F90 libprojection.a  makefile $(SYSINC)
 	$(FC) $(FPPFLAGS) -DFORWARD $(FFLAGS) $(EXFLAGS) -o project_for project.F90 $(LIBS) -lprojection
-project_inv: project.F90 libprojection.a makefile
+project_inv: project.F90 libprojection.a makefile $(SYSINC)
 	$(FC) $(FPPFLAGS) -DINVERSE $(FFLAGS) $(EXFLAGS) -o project_inv project.F90 $(LIBS) -lprojection
 
 all: lib tools
 
 lib: libprojection.a
 
-tools: project_inv project_for makefile
+tools: project_inv project_for makefile $(SYSINC)
 	
-check: libprojection.a project_inv project_for makefile
+check: libprojection.a project_inv project_for makefile $(SYSINC)
 	sh check.sh
 clean:
 	rm -f projection.o
