@@ -93,7 +93,7 @@
         write(0,*)'           Expecting to read: PJ_ilatlonflag (int)'
         write(0,*)'           From the following projection line: '
         write(0,*)linebuffer
-        write(0,*)'MR System Message: '
+        write(0,*)'PJ System Message: '
         write(0,*)iomessage
         stop 1
       endif
@@ -108,7 +108,7 @@
           write(0,*)'           Expecting to read: PJ_ilatlonflag, PJ_iprojflag'
           write(0,*)'           From the following projection line: '
           write(0,*)linebuffer
-          write(0,*)'MR System Message: '
+          write(0,*)'PJ System Message: '
           write(0,*)iomessage
           stop 1
         endif
@@ -149,7 +149,7 @@
           write(0,*)'           PJ_ilatlonflag,PJ_iprojflag,PJ_lam0,PJ_phi0,PJ_k0,PJ_Re'
           write(0,*)'           From the following projection line: '
           write(0,*)linebuffer
-          write(0,*)'MR System Message: '
+          write(0,*)'PJ System Message: '
           write(0,*)iomessage
           stop 1
         endif
@@ -202,7 +202,7 @@
           write(0,*)'           PJ_ilatlonflag,PJ_iprojflag,PJ_lam0,PJ_phi0,PJ_phi1,PJ_phi2'
           write(0,*)'           From the following projection line: '
           write(0,*)linebuffer
-          write(0,*)'MR System Message: '
+          write(0,*)'PJ System Message: '
           write(0,*)iomessage
           stop 1
         endif
@@ -245,7 +245,7 @@
           write(0,*)'           PJ_ilatlonflag,PJ_iprojflag,izone,inorth'
           write(0,*)'           From the following projection line: '
           write(0,*)linebuffer
-          write(0,*)'MR System Message: '
+          write(0,*)'PJ System Message: '
           write(0,*)iomessage
           stop 1
         endif
@@ -293,7 +293,7 @@
           write(0,*)'           PJ_ilatlonflag,PJ_iprojflag,PJ_lam0,PJ_phi0,PJ_phi1,PJ_phi2,PJ_Re'
           write(0,*)'           From the following projection line: '
           write(0,*)linebuffer
-          write(0,*)'MR System Message: '
+          write(0,*)'PJ System Message: '
           write(0,*)iomessage
           stop 1
         endif
@@ -341,7 +341,7 @@
           write(0,*)'           PJ_ilatlonflag,PJ_iprojflag,PJ_lam0,PJ_phi0,PJ_Re'
           write(0,*)'           From the following projection line: '
           write(0,*)linebuffer
-          write(0,*)'MR System Message: '
+          write(0,*)'PJ System Message: '
           write(0,*)iomessage
           stop 1
         endif
