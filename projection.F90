@@ -74,6 +74,9 @@
       character(len=20) :: buffer
       integer           :: inorth,izone
 
+      integer :: iostatus
+      character(len=120) :: iomessage
+
       ! Initialize values
       PJ_k0     = 0.0_8
       PJ_Re     = 6371.229_8
@@ -84,14 +87,31 @@
       PJ_phi1   = 0.0_8
       PJ_phi2   = 0.0_8
 
-      read(linebuffer,*)PJ_ilatlonflag
-
+      read(linebuffer,*,iostat=iostatus,iomsg=iomessage)PJ_ilatlonflag
+      if(iostatus.ne.0)then
+        write(0,*)'PJ ERROR:  Error reading projection line'
+        write(0,*)'           Expecting to read: PJ_ilatlonflag (int)'
+        write(0,*)'           From the following projection line: '
+        write(0,*)linebuffer
+        write(0,*)'PJ System Message: '
+        write(0,*)iomessage
+        stop 1
+      endif
       if(PJ_ilatlonflag.eq.1)then
         ! coordinates are in lon/lat
         return
       elseif(PJ_ilatlonflag.eq.0)then
         ! coordinates are projected, read the projection flag
-        read(linebuffer,*)PJ_ilatlonflag,PJ_iprojflag
+        read(linebuffer,*,iostat=iostatus,iomsg=iomessage)PJ_ilatlonflag,PJ_iprojflag
+        if(iostatus.ne.0)then
+          write(0,*)'PJ ERROR:  Error reading projection line'
+          write(0,*)'           Expecting to read: PJ_ilatlonflag, PJ_iprojflag'
+          write(0,*)'           From the following projection line: '
+          write(0,*)linebuffer
+          write(0,*)'PJ System Message: '
+          write(0,*)iomessage
+          stop 1
+        endif
         if(PJ_iprojflag.ne.0.and.PJ_iprojflag.ne.1.and. &
            PJ_iprojflag.ne.2.and.PJ_iprojflag.ne.3.and. &
            PJ_iprojflag.ne.4.and.PJ_iprojflag.ne.5) then
@@ -122,7 +142,17 @@
 
       case(1)
         ! Polar stereographic
-        read(linebuffer,*)PJ_ilatlonflag,PJ_iprojflag,PJ_lam0,PJ_phi0,PJ_k0,PJ_Re
+        read(linebuffer,*,iostat=iostatus,iomsg=iomessage)PJ_ilatlonflag,PJ_iprojflag,PJ_lam0,PJ_phi0,PJ_k0,PJ_Re
+        if(iostatus.ne.0)then
+          write(0,*)'PJ ERROR:  Error reading projection line for Polar Stereographic'
+          write(0,*)'           Expecting to read: '
+          write(0,*)'           PJ_ilatlonflag,PJ_iprojflag,PJ_lam0,PJ_phi0,PJ_k0,PJ_Re'
+          write(0,*)'           From the following projection line: '
+          write(0,*)linebuffer
+          write(0,*)'PJ System Message: '
+          write(0,*)iomessage
+          stop 1
+        endif
         if(abs(PJ_lam0).gt.360.0)then
           write(0,*)"PJ ERROR:  PJ_lam0 should be in in range -360 - 360"
           write(0,*)"   lam0 = ",PJ_lam0
@@ -165,7 +195,17 @@
       case(2)
         ! Albers Equal Area
         write(0,*)"WARNING: Albers not yet verified"
-        read(linebuffer,*)PJ_ilatlonflag,PJ_iprojflag,PJ_lam0,PJ_phi0,PJ_phi1,PJ_phi2
+        read(linebuffer,*,iostat=iostatus,iomsg=iomessage)PJ_ilatlonflag,PJ_iprojflag,PJ_lam0,PJ_phi0,PJ_phi1,PJ_phi2
+        if(iostatus.ne.0)then
+          write(0,*)'PJ ERROR:  Error reading projection line for Albers Equal Area'
+          write(0,*)'           Expecting to read: '
+          write(0,*)'           PJ_ilatlonflag,PJ_iprojflag,PJ_lam0,PJ_phi0,PJ_phi1,PJ_phi2'
+          write(0,*)'           From the following projection line: '
+          write(0,*)linebuffer
+          write(0,*)'PJ System Message: '
+          write(0,*)iomessage
+          stop 1
+        endif
         if(abs(PJ_lam0).gt.360.0)then
           write(0,*)"PJ ERROR:  PJ_lam0 should be in in range -360 - 360"
           write(0,*)"   PJ_lam0 = ",PJ_lam0
@@ -198,7 +238,17 @@
       case(3)
         ! UTM
         write(0,*)"WARNING: UTM not yet verified"
-        read(linebuffer,*)PJ_ilatlonflag,PJ_iprojflag,izone,inorth
+        read(linebuffer,*,iostat=iostatus,iomsg=iomessage)PJ_ilatlonflag,PJ_iprojflag,izone,inorth
+        if(iostatus.ne.0)then
+          write(0,*)'PJ ERROR:  Error reading projection line for UTM'
+          write(0,*)'           Expecting to read: '
+          write(0,*)'           PJ_ilatlonflag,PJ_iprojflag,izone,inorth'
+          write(0,*)'           From the following projection line: '
+          write(0,*)linebuffer
+          write(0,*)'PJ System Message: '
+          write(0,*)iomessage
+          stop 1
+        endif
         if(izone.le.0.or.izone.gt.60)then
           write(0,*)"PJ ERROR:  izone should be in in range 1 - 60"
           write(0,*)"   izone = ",izone
@@ -235,8 +285,18 @@
 
       case(4)
         ! Lambert conformal conic (NARR, NAM218, NAM221)
-        read(linebuffer,*)PJ_ilatlonflag,PJ_iprojflag,PJ_lam0, &
+        read(linebuffer,*,iostat=iostatus,iomsg=iomessage)PJ_ilatlonflag,PJ_iprojflag,PJ_lam0, &
                           PJ_phi0,PJ_phi1,PJ_phi2,PJ_Re
+        if(iostatus.ne.0)then
+          write(0,*)'PJ ERROR:  Error reading projection line for Lambert Conformal Conic'
+          write(0,*)'           Expecting to read: '
+          write(0,*)'           PJ_ilatlonflag,PJ_iprojflag,PJ_lam0,PJ_phi0,PJ_phi1,PJ_phi2,PJ_Re'
+          write(0,*)'           From the following projection line: '
+          write(0,*)linebuffer
+          write(0,*)'PJ System Message: '
+          write(0,*)iomessage
+          stop 1
+        endif
         if(abs(PJ_lam0).gt.360.0)then
           write(0,*)"PJ ERROR:  PJ_lam0 should be in in range -360 - 360"
           write(0,*)"   PJ_lam0 = ",PJ_lam0
@@ -274,7 +334,17 @@
 
       case(5)
         ! Mercator (NAM196)
-        read(linebuffer,*)PJ_ilatlonflag,PJ_iprojflag,PJ_lam0,PJ_phi0,PJ_Re
+        read(linebuffer,*,iostat=iostatus,iomsg=iomessage)PJ_ilatlonflag,PJ_iprojflag,PJ_lam0,PJ_phi0,PJ_Re
+        if(iostatus.ne.0)then
+          write(0,*)'PJ ERROR:  Error reading projection line for Mercator'
+          write(0,*)'           Expecting to read: '
+          write(0,*)'           PJ_ilatlonflag,PJ_iprojflag,PJ_lam0,PJ_phi0,PJ_Re'
+          write(0,*)'           From the following projection line: '
+          write(0,*)linebuffer
+          write(0,*)'PJ System Message: '
+          write(0,*)iomessage
+          stop 1
+        endif
         if(abs(PJ_lam0).gt.360.0)then
           write(0,*)"PJ ERROR:  PJ_lam0 should be in in range -360 - 360"
           write(0,*)"   PJ_lam0 = ",PJ_lam0
