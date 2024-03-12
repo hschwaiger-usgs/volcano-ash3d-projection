@@ -87,7 +87,7 @@ lib: libprojection.a
 tools: project_inv project_for makefile $(SYSINC)
 	
 check: libprojection.a project_inv project_for makefile $(SYSINC)
-	sh check.sh
+	bash check.sh
 clean:
 	rm -f projection.o
 	rm -f *.mod
