@@ -3,3 +3,4 @@
 libprojection.a
 project_for
 project_inv
+PJ_version.h
