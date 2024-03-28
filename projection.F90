@@ -1,4 +1,4 @@
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !
 !      This file is a component of the volcanic ash transport and dispersion model Ash3d,
 !      written at the U.S. Geological Survey by Hans F. Schwaiger (hschwaiger@usgs.gov),
@@ -92,7 +92,7 @@
       PJ_phi2   = 0.0_8
 
       read(linebuffer,*,iostat=iostatus,iomsg=iomessage)PJ_ilatlonflag
-      if(iostatus.ne.0)then
+      if (iostatus.ne.0) then
         write(error_unit,*)'PJ ERROR:  Error reading projection line'
         write(error_unit,*)'           Expecting to read: PJ_ilatlonflag (int)'
         write(error_unit,*)'           From the following projection line: '
@@ -101,13 +101,13 @@
         write(error_unit,*)iomessage
         stop 1
       endif
-      if(PJ_ilatlonflag.eq.1)then
+      if (PJ_ilatlonflag.eq.1) then
         ! coordinates are in lon/lat
         return
-      elseif(PJ_ilatlonflag.eq.0)then
+      elseif (PJ_ilatlonflag.eq.0) then
         ! coordinates are projected, read the projection flag
         read(linebuffer,*,iostat=iostatus,iomsg=iomessage)PJ_ilatlonflag,PJ_iprojflag
-        if(iostatus.ne.0)then
+        if (iostatus.ne.0) then
           write(error_unit,*)'PJ ERROR:  Error reading projection line'
           write(error_unit,*)'           Expecting to read: PJ_ilatlonflag, PJ_iprojflag'
           write(error_unit,*)'           From the following projection line: '
@@ -116,7 +116,7 @@
           write(error_unit,*)iomessage
           stop 1
         endif
-        if(PJ_iprojflag.ne.0.and.PJ_iprojflag.ne.1.and. &
+        if (PJ_iprojflag.ne.0.and.PJ_iprojflag.ne.1.and. &
            PJ_iprojflag.ne.2.and.PJ_iprojflag.ne.3.and. &
            PJ_iprojflag.ne.4.and.PJ_iprojflag.ne.5) then
           write(error_unit,*)"Unrecognized projection flag"
@@ -147,7 +147,7 @@
       case(1)
         ! Polar stereographic
         read(linebuffer,*,iostat=iostatus,iomsg=iomessage)PJ_ilatlonflag,PJ_iprojflag,PJ_lam0,PJ_phi0,PJ_k0,PJ_Re
-        if(iostatus.ne.0)then
+        if (iostatus.ne.0) then
           write(error_unit,*)'PJ ERROR:  Error reading projection line for Polar Stereographic'
           write(error_unit,*)'           Expecting to read: '
           write(error_unit,*)'           PJ_ilatlonflag,PJ_iprojflag,PJ_lam0,PJ_phi0,PJ_k0,PJ_Re'
@@ -157,24 +157,24 @@
           write(error_unit,*)iomessage
           stop 1
         endif
-        if(abs(PJ_lam0).gt.360.0_8)then
+        if (abs(PJ_lam0).gt.360.0_8) then
           write(error_unit,*)"PJ ERROR:  PJ_lam0 should be in in range -360 - 360"
           write(error_unit,*)"   lam0 = ",PJ_lam0
           stop 1
         endif
-        if(abs(PJ_phi0).gt.90.0_8)then
+        if (abs(PJ_phi0).gt.90.0_8) then
           write(error_unit,*)"PJ ERROR:  PJ_phi0 should be in in range -90 - 30"
           write(error_unit,*)"   PJ_phi0 = ",PJ_phi0
           stop 1
         endif
         PJ_phi1 = PJ_phi0
         PJ_phi2 = PJ_phi0
-        if(PJ_k0.le.0.0_8)then
+        if (PJ_k0.le.0.0_8) then
           write(error_unit,*)"PJ ERROR:  PJ_k0 should > 0"
           write(error_unit,*)"   PJ_k0 = ",PJ_k0
           stop 1
         endif
-        if(PJ_Re.le.5000.0_8.or.PJ_Re.ge.7000.0_8)then
+        if (PJ_Re.le.5000.0_8.or.PJ_Re.ge.7000.0_8) then
           write(error_unit,*)"PJ ERROR:  PJ_ should around 6300 km, not ",PJ_Re
           stop 1
         endif
@@ -200,7 +200,7 @@
         ! Albers Equal Area
         write(error_unit,*)"WARNING: Albers not yet verified"
         read(linebuffer,*,iostat=iostatus,iomsg=iomessage)PJ_ilatlonflag,PJ_iprojflag,PJ_lam0,PJ_phi0,PJ_phi1,PJ_phi2
-        if(iostatus.ne.0)then
+        if (iostatus.ne.0) then
           write(error_unit,*)'PJ ERROR:  Error reading projection line for Albers Equal Area'
           write(error_unit,*)'           Expecting to read: '
           write(error_unit,*)'           PJ_ilatlonflag,PJ_iprojflag,PJ_lam0,PJ_phi0,PJ_phi1,PJ_phi2'
@@ -210,12 +210,12 @@
           write(error_unit,*)iomessage
           stop 1
         endif
-        if(abs(PJ_lam0).gt.360.0_8)then
+        if (abs(PJ_lam0).gt.360.0_8) then
           write(error_unit,*)"PJ ERROR:  PJ_lam0 should be in in range -360 - 360"
           write(error_unit,*)"   PJ_lam0 = ",PJ_lam0
           stop 1
         endif
-        if(abs(PJ_phi0).gt.90.0_8.or.abs(PJ_phi1).gt.90.0_8.or.abs(PJ_phi2).gt.90.0_8)then
+        if (abs(PJ_phi0).gt.90.0_8.or.abs(PJ_phi1).gt.90.0_8.or.abs(PJ_phi2).gt.90.0_8) then
           write(error_unit,*) &
             "PJ ERROR:  PJ_phi0,1,2 should each be in in range -90 - 90"
           write(error_unit,*)" PJ_phi0,1,2 = ",PJ_phi0,PJ_phi1,PJ_phi2
@@ -243,7 +243,7 @@
         ! UTM
         write(error_unit,*)"WARNING: UTM not yet verified"
         read(linebuffer,*,iostat=iostatus,iomsg=iomessage)PJ_ilatlonflag,PJ_iprojflag,izone,inorth
-        if(iostatus.ne.0)then
+        if (iostatus.ne.0) then
           write(error_unit,*)'PJ ERROR:  Error reading projection line for UTM'
           write(error_unit,*)'           Expecting to read: '
           write(error_unit,*)'           PJ_ilatlonflag,PJ_iprojflag,izone,inorth'
@@ -253,12 +253,12 @@
           write(error_unit,*)iomessage
           stop 1
         endif
-        if(izone.le.0.or.izone.gt.60)then
+        if (izone.le.0.or.izone.gt.60) then
           write(error_unit,*)"PJ ERROR:  izone should be in in range 1 - 60"
           write(error_unit,*)"   izone = ",izone
           stop 1
         endif
-        if(inorth.ne.0.and.inorth.ne.1)then
+        if (inorth.ne.0.and.inorth.ne.1) then
           write(error_unit,*)"PJ ERROR:  inorth should be either 0 or 1"
           write(error_unit,*)"   inorth = ",inorth
           stop 1
@@ -268,7 +268,7 @@
         params(1) = buffer
         write(buffer,222)izone
         params(2) = buffer
-        if(inorth.eq.1)then
+        if (inorth.eq.1) then
           write(buffer,224)
         else
           write(buffer,223)"+south"
@@ -291,7 +291,7 @@
         ! Lambert conformal conic (NARR, NAM218, NAM221)
         read(linebuffer,*,iostat=iostatus,iomsg=iomessage)PJ_ilatlonflag,PJ_iprojflag,PJ_lam0, &
                           PJ_phi0,PJ_phi1,PJ_phi2,PJ_Re
-        if(iostatus.ne.0)then
+        if (iostatus.ne.0) then
           write(error_unit,*)'PJ ERROR:  Error reading projection line for Lambert Conformal Conic'
           write(error_unit,*)'           Expecting to read: '
           write(error_unit,*)'           PJ_ilatlonflag,PJ_iprojflag,PJ_lam0,PJ_phi0,PJ_phi1,PJ_phi2,PJ_Re'
@@ -301,18 +301,18 @@
           write(error_unit,*)iomessage
           stop 1
         endif
-        if(abs(PJ_lam0).gt.360.0_8)then
+        if (abs(PJ_lam0).gt.360.0_8) then
           write(error_unit,*)"PJ ERROR:  PJ_lam0 should be in in range -360 - 360"
           write(error_unit,*)"   PJ_lam0 = ",PJ_lam0
           stop 1
         endif
-        if(abs(PJ_phi0).gt.90.0_8.or.abs(PJ_phi1).gt.90.0_8.or.abs(PJ_phi2).gt.90.0_8)then
+        if (abs(PJ_phi0).gt.90.0_8.or.abs(PJ_phi1).gt.90.0_8.or.abs(PJ_phi2).gt.90.0_8) then
           write(error_unit,*) &
             "PJ ERROR:  PJ_phi0,1,2 should each be in in range -90 - 90"
           write(error_unit,*)"   PJ_phi0,1,2 = ",PJ_phi0,PJ_phi1,PJ_phi2
           stop 1
         endif
-        if(PJ_Re.le.5000.0_8.or.PJ_Re.ge.7000.0_8)then
+        if (PJ_Re.le.5000.0_8.or.PJ_Re.ge.7000.0_8) then
           write(error_unit,*)"PJ ERROR:  PJ_ should around 6300 km, not ",PJ_Re
           stop 1
         endif
@@ -339,7 +339,7 @@
       case(5)
         ! Mercator (NAM196)
         read(linebuffer,*,iostat=iostatus,iomsg=iomessage)PJ_ilatlonflag,PJ_iprojflag,PJ_lam0,PJ_phi0,PJ_Re
-        if(iostatus.ne.0)then
+        if (iostatus.ne.0) then
           write(error_unit,*)'PJ ERROR:  Error reading projection line for Mercator'
           write(error_unit,*)'           Expecting to read: '
           write(error_unit,*)'           PJ_ilatlonflag,PJ_iprojflag,PJ_lam0,PJ_phi0,PJ_Re'
@@ -349,18 +349,18 @@
           write(error_unit,*)iomessage
           stop 1
         endif
-        if(abs(PJ_lam0).gt.360.0_8)then
+        if (abs(PJ_lam0).gt.360.0_8) then
           write(error_unit,*)"PJ ERROR:  PJ_lam0 should be in in range -360 - 360"
           write(error_unit,*)"   PJ_lam0 = ",PJ_lam0
           stop 1
         endif
-        if(abs(PJ_phi0).gt.90.0_8)then
+        if (abs(PJ_phi0).gt.90.0_8) then
           write(error_unit,*) &
             "PJ ERROR:  PJ_phi0 should each be in in range -90 - 90"
           write(error_unit,*)"   PJ_phi0 = ",PJ_phi0
           stop 1
         endif
-        if(PJ_Re.le.5000.0_8.or.PJ_Re.ge.7000.0_8)then
+        if (PJ_Re.le.5000.0_8.or.PJ_Re.ge.7000.0_8) then
           write(error_unit,*)"PJ ERROR:  PJ_ should around 6300 km, not ",PJ_Re
           stop 1
         endif
@@ -429,16 +429,16 @@
       real(kind=8) :: zproj
 
       ! First, convert all longitudes to the range 0<lon<=360
-      if (lon_in.le.  0.0_8)then
+      if (lon_in.le.  0.0_8) then
         lon_in_wrap = lon_in + 360.0_8
-      elseif (lon_in.gt.360.0_8)then
+      elseif (lon_in.gt.360.0_8) then
         lon_in_wrap = lon_in - 360.0_8
       else
         lon_in_wrap = lon_in
       endif
-      if (lon_0 .le.  0.0_8)then
+      if (lon_0 .le.  0.0_8) then
         lon_0_wrap = lon_0  + 360.0_8
-      elseif (lon_0 .gt.360.0_8)then
+      elseif (lon_0 .gt.360.0_8) then
         lon_0_wrap = lon_0  - 360.0_8
       else
         lon_0_wrap = lon_0 
@@ -454,9 +454,9 @@
         ! Polar stereographic
         !    http://mathworld.wolfram.com/StereographicProjection.html
         ! Parameters required:
-        !   lon_0 = central longitude (only longitude that coindices with a j-column
+        !   lon_0 = central longitude (only longitude that coincides with a j-column
         !   lat_0 = lat of projection origin (only 90.0 or -90.0 allowed)
-        !   lat_1 = truelat (latitude where the projection plane intesects globe (usually 90 or -90))
+        !   lat_1 = truelat (latitude where the projection plane intersects globe (usually 90 or -90))
         !   k_0   = scale factor
         !   earth_R = radius of spherical Earth
         if (abs(lat_0).lt.90.0_8) then  !  NOTE: this projection only works if lat_0=+-90.
@@ -467,31 +467,31 @@
                          'Program stopped.')
           stop 1
         endif
-        if (abs(lat_1-lat_0).gt.0.01_8)then
+        if (abs(lat_1-lat_0).gt.0.01_8) then
           ! A true latitude is given instead of k_0; overwriting k_0
           k_s=(1.0_8-sin(lat_1*DEG2RAD))*0.5_8
         else
           k_s = k_0
         endif
 
-        if (lat_0.gt.0.0_8)then
-          ! North Polar Sterographic projection
+        if (lat_0.gt.0.0_8) then
+          ! North Polar Stereographic projection
             ! Using Eq. 21-5 and 21.6 of Snyder, 1987
             ! (https://pubs.er.usgs.gov/publication/pp1395)
           zproj   = k_s*2.0_8*earth_R
           theta   = (lon_in_wrap-lon_0_wrap)*DEG2RAD
-          if (theta.le.-PI) theta = theta + 2.0_8*PI
-          if (theta.gt. PI) theta = theta - 2.0_8*PI
+          if (theta.le.-PI)theta = theta + 2.0_8*PI
+          if (theta.gt. PI)theta = theta - 2.0_8*PI
           x_out =  zproj*tan(0.25_8*PI-0.5_8*lat_in*DEG2RAD)*sin(theta)
           y_out = -zproj*tan(0.25_8*PI-0.5_8*lat_in*DEG2RAD)*cos(theta)
         else
-          ! South Polar Sterographic projection
+          ! South Polar Stereographic projection
             ! Using Eq. 21-9 and 21.10 of Snyder, 1987
             ! (https://pubs.er.usgs.gov/publication/pp1395)
           zproj   = k_s*2.0_8*earth_R
           theta   = (lon_in_wrap-lon_0_wrap)*DEG2RAD
-          if (theta.le.-PI) theta = theta + 2.0_8*PI
-          if (theta.gt. PI) theta = theta - 2.0_8*PI
+          if (theta.le.-PI)theta = theta + 2.0_8*PI
+          if (theta.gt. PI)theta = theta - 2.0_8*PI
           x_out =  zproj*tan(0.25_8*PI+0.5_8*lat_in*DEG2RAD)*sin(theta)
           y_out =  zproj*tan(0.25_8*PI+0.5_8*lat_in*DEG2RAD)*cos(theta)
         endif
@@ -499,11 +499,11 @@
         ! Albers Equal Area
         write(error_unit,*)"WARNING: Albers not yet verified"
         stop 1
-      elseif(iprojflag.eq.3)then
+      elseif (iprojflag.eq.3) then
         ! UTM
         write(error_unit,*)"WARNING: UTM not yet verified"
         stop 1
-      elseif(iprojflag.eq.4)then
+      elseif (iprojflag.eq.4) then
         ! Lambert conformal conic (NARR, NAM218, NAM221)
 
          !These formulas were taken from the wikipedia article on lcc
@@ -527,7 +527,7 @@
         rho_0 = F/(tan(PI/4.0_8+DEG2RAD*lat_0/2.0_8))**n_exp
         x_out = earth_R*rho*sin(n_exp*(DEG2RAD*(lon_in_wrap-lon_0_wrap)))
         y_out = earth_R*(rho_0-rho*cos(n_exp*DEG2RAD*(lon_in_wrap-lon_0_wrap)))
-      elseif(iprojflag.eq.5)then
+      elseif (iprojflag.eq.5) then
         ! Mercator
         !  http://mathworld.wolfram.com/MercatorProjection.html
         !   These are equations 7-1 and 7-2 of Snyder
@@ -582,9 +582,9 @@
       real(kind=8) :: c_fac
 
       ! First, convert input longitude to the range 0<lon<=360
-      if (lon_0 .le.  0.0_8)then
+      if (lon_0 .le.  0.0_8) then
         lon_0_wrap = lon_0  + 360.0_8
-      elseif (lon_0 .gt.360.0_8)then
+      elseif (lon_0 .gt.360.0_8) then
         lon_0_wrap = lon_0  - 360.0_8
       else
         lon_0_wrap = lon_0
@@ -607,14 +607,14 @@
                          'Program stopped.')
           stop 1
         endif
-        if (abs(lat_1-lat_0).gt.0.01_8)then
+        if (abs(lat_1-lat_0).gt.0.01_8) then
           ! A true latitude is given instead of k_0; overwriting k_0
           k_s=(1.0_8-sin(lat_1*DEG2RAD))*0.5_8
         else
           k_s = k_0
         endif
 
-        if (lat_0.gt.0.0_8)then
+        if (lat_0.gt.0.0_8) then
           ! North Polar Sterographic projection
           theta   = atan2(x_in,-y_in)  ! Eq 20-16 of Snyder, 1987
         else
@@ -628,7 +628,7 @@
             ! Eq. 20-14 of Snyder, 1987 (p158)
           !lat_out = asin(     cos(c_fac)*sin(lat_0*DEG2RAD) + &
           !               y_in*sin(c_fac)*cos(lat_0*DEG2RAD)/rho)
-        if (lat_0.gt.0.0_8)then
+        if (lat_0.gt.0.0_8) then
           ! North Polar Sterographic projection
           lat_out = asin(     cos(c_fac)) * RAD2DEG
         else
@@ -642,11 +642,11 @@
         ! Albers Equal Area
         write(error_unit,*)"WARNING: Albers not yet verified"
         stop 1
-      elseif(iprojflag.eq.3)then
+      elseif (iprojflag.eq.3) then
         ! UTM
         write(error_unit,*)"WARNING: UTM not yet verified"
         stop 1
-      elseif(iprojflag.eq.4)then
+      elseif (iprojflag.eq.4) then
         ! Lambert conformal conic (NARR, NAM218, NAM221)
         !These formulas were taken from the wikipedia article on lcc
         !also given in the Wolfram page
@@ -670,7 +670,7 @@
         rho   = sign(sqrt((x_in/earth_R)**2.0_8+(rho_0-(y_in/earth_R))**2.0_8),n_exp)
         lat_out  = RAD2DEG*2.0_8*atan((F/rho)**(1.0_8/n_exp))-90.0_8
         lon_out  = lon_0_wrap+RAD2DEG*theta/n_exp
-      elseif(iprojflag.eq.5)then
+      elseif (iprojflag.eq.5) then
         ! Mercator
         !  http://mathworld.wolfram.com/MercatorProjection.html
         k_eq = cos(lat_0*DEG2RAD)
@@ -679,7 +679,7 @@
         lat_out = 2.0_8*atan(tmp_arg)/DEG2RAD - 90.0_8
       else
         write(error_unit,*) &
-        'sorry, iprojflag is not 1,2,3,4, or 5.  I dont know what to do'
+        'sorry, iprojflag is not 1,2,3,4, or 5.  I do not know what to do'
         stop 1
       endif
 
