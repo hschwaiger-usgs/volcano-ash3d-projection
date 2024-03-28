@@ -36,7 +36,7 @@
 #    This variable cannot be left blank
 #
 SYSTEM = gfortran
-SYSINC = make_gfortran.inc
+SYSINC = make_$(SYSTEM).inc
 #
 #  RUN specifies which collection of compilation flags that should be run
 #    Current available options are:
@@ -48,7 +48,7 @@ SYSINC = make_gfortran.inc
 #RUN = DEBUG
 #RUN = PROF
 RUN = OPT
-#
+
 INSTALLDIR=/opt/USGS
 
 ###############################################################################
@@ -64,6 +64,10 @@ include $(SYSINC)
 ###############################################################################
 
 LIB = libprojection.a
+
+EXEC = \
+ project_for \
+ project_inv
 
 ###############################################################################
 # TARGETS
@@ -98,11 +102,10 @@ clean:
 install:
 	install -d $(INSTALLDIR)/lib/
 	install -d $(INSTALLDIR)/include/
-	install -d $(INSTALLDIR)/bin
-	install -m 644 libprojection.a $(INSTALLDIR)/lib/
+	install -d $(INSTALLDIR)/bin/
+	install -m 644 $(LIB) $(INSTALLDIR)/lib/
 	install -m 644 projection.mod $(INSTALLDIR)/include/
-	install -m 775 project_for $(INSTALLDIR)/bin
-	install -m 775 project_inv $(INSTALLDIR)/bin
+	install -m 755 $(EXEC) $(INSTALLDIR)/bin/
 
 uninstall:
 	rm -f $(INSTALLDIR)/lib/$(LIB)
