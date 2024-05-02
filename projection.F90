@@ -50,7 +50,7 @@
 #include "PJ_version.h"
       integer     ,public :: PJ_ilatlonflag
       integer     ,public :: PJ_iprojflag
-      real(kind=8),public :: PJ_k0      != 0.933_8       ! scale factor
+      real(kind=8),public :: PJ_k0  = 1.0_8        ! scale factor; PS often uses 0.933_8
       real(kind=8),public :: PJ_Re  = 6371.229_8
       real(kind=8),public :: PJ_lam0,PJ_lam1,PJ_lam2
       real(kind=8),public :: PJ_phi0,PJ_phi1,PJ_phi2
@@ -82,7 +82,7 @@
       character(len=120) :: iomessage
 
       ! Initialize values
-      PJ_k0     = 0.0_8
+      PJ_k0     = 1.0_8
       PJ_Re     = 6371.229_8
       PJ_lam0   = 0.0_8
       PJ_lam1   = 0.0_8
@@ -132,7 +132,7 @@
 
       case(0)
         ! Non-geographic projection, (x,y) only
-      PJ_k0     = 0.0_8
+      PJ_k0     = 1.0_8
       PJ_Re     = 6371.229_8
       PJ_lam0   = 0.0_8
       PJ_lam1   = 0.0_8
