@@ -615,10 +615,10 @@
         endif
 
         if (lat_0.gt.0.0_8) then
-          ! North Polar Sterographic projection
+          ! North Polar Stereographic projection
           theta   = atan2(x_in,-y_in)  ! Eq 20-16 of Snyder, 1987
         else
-          ! South Polar Sterographic projection
+          ! South Polar Stereographic projection
           theta   = atan2(x_in,y_in)   ! Eq 20-17 of Snyder, 1987
         endif
 
@@ -629,10 +629,10 @@
           !lat_out = asin(     cos(c_fac)*sin(lat_0*DEG2RAD) + &
           !               y_in*sin(c_fac)*cos(lat_0*DEG2RAD)/rho)
         if (lat_0.gt.0.0_8) then
-          ! North Polar Sterographic projection
+          ! North Polar Stereographic projection
           lat_out = asin(     cos(c_fac)) * RAD2DEG
         else
-          ! South Polar Sterographic projection
+          ! South Polar Stereographic projection
           lat_out = -1.0_8*asin(     cos(c_fac)) * RAD2DEG
         endif
         if (lon_out.lt.  0.0_8) lon_out=lon_out+360.0_8
@@ -679,7 +679,7 @@
         lat_out = 2.0_8*atan(tmp_arg)/DEG2RAD - 90.0_8
       else
         write(error_unit,*) &
-        'sorry, iprojflag is not 1,2,3,4, or 5.  I do not know what to do'
+        'Sorry, iprojflag is not 1,2,3,4, or 5.  I do not know what to do'
         stop 1
       endif
 

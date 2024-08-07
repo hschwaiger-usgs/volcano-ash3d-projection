@@ -25,7 +25,7 @@ To run test on the library, type:
   `make check`
 
 This will run several forward projections and verify that inverse projections
-produce the original input parameters.  Additionaly, the forward projections
+produce the original input parameters.  Additionally, the forward projections
 will be tested against the proj4 library.
 
 To install the library and module, edit the `INSTALLDIR` variable of the makefile
