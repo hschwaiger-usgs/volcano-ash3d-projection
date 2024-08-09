@@ -47,17 +47,17 @@
         ! 0 5 198.475 20.0 0.933 6371.229    #Proj flags and params
         ! proj +proj=merc  +lat_ts=20.0 +lon_0=198.475 +R=6371.229
 
-        ! NAM 6-km Polar Sterographic
+        ! NAM 6-km Polar Stereographic
         ! 0 1 -150.0 90.0 0.933 6371.229    #Proj flags and params
         ! proj +proj=stere  +lon_0=210  +lat_0=90 +k_0=0.933 +R=6371.229
 
-        ! NAM 3-km Polar Sterographic and
-        ! NAM 90-km Polar Sterographic
+        ! NAM 3-km Polar Stereographic and
+        ! NAM 90-km Polar Stereographic
         ! 0 1 -150.0 90.0 0.933 6371.229    #Proj flags and params
         ! proj +proj=stere  +lon_0=210  +lat_0=90 +k_0=0.933 +R=6371.229
 
-        ! NAM 45-km Polar Sterographic and
-        ! NAM 11.25-km Polar Sterographic
+        ! NAM 45-km Polar Stereographic and
+        ! NAM 11.25-km Polar Stereographic
         ! 0 1 -135.0 90.0 0.933 6371.229    #Proj flags and params
         ! proj +proj=stere  +lon_0=225  +lat_0=90 +k_0=0.933 +R=6371.229
 
@@ -85,7 +85,7 @@
       call get_command_argument(1, arg, length=inlen, status=iostatus)
       read(arg,*,iostat=iostatus,iomsg=iomessage)inx
       if (iostatus.ne.0) then
-        write(error_unit,*)"ERROR: could not read comand-line argument (1)"
+        write(error_unit,*)"ERROR: could not read command-line argument (1)"
         write(error_unit,*)" inx = ",inx
         write(error_unit,*)iomessage
         stop 1
@@ -93,7 +93,7 @@
       call get_command_argument(2, arg, length=inlen, status=iostatus)
       read(arg,*,iostat=iostatus,iomsg=iomessage)iny
       if (iostatus.ne.0) then
-        write(error_unit,*)"ERROR: could not read comand-line argument (2)"
+        write(error_unit,*)"ERROR: could not read command-line argument (2)"
         write(error_unit,*)" iny = ",iny
         write(error_unit,*)iomessage
         stop 1
@@ -101,7 +101,7 @@
       call get_command_argument(3, arg, length=inlen, status=iostatus)
       read(arg,*,iostat=iostatus,iomsg=iomessage)PJ_ilatlonflag
       if (iostatus.ne.0) then
-        write(error_unit,*)"ERROR: could not read comand-line argument (3)"
+        write(error_unit,*)"ERROR: could not read command-line argument (3)"
         write(error_unit,*)" PJ_ilatlonflag = ",PJ_ilatlonflag
         write(error_unit,*)iomessage
         stop 1
@@ -115,7 +115,7 @@
         call get_command_argument(4, arg, length=inlen, status=iostatus)
         read(arg,*,iostat=iostatus,iomsg=iomessage)PJ_iprojflag
         if (iostatus.ne.0) then
-          write(error_unit,*)"ERROR: could not read comand-line argument (4)"
+          write(error_unit,*)"ERROR: could not read command-line argument (4)"
           write(error_unit,*)" PJ_iprojflag = ",PJ_iprojflag
           write(error_unit,*)iomessage
           stop 1
@@ -158,7 +158,7 @@
         call get_command_argument(5, arg, length=inlen, status=iostatus)
         read(arg,*,iostat=iostatus,iomsg=iomessage)PJ_lam0
         if (iostatus.ne.0) then
-          write(error_unit,*)"ERROR: could not read comand-line argument (5)"
+          write(error_unit,*)"ERROR: could not read command-line argument (5)"
           write(error_unit,*)" PJ_lam0 = ",PJ_lam0
           write(error_unit,*)iomessage
           stop 1
@@ -166,7 +166,7 @@
         call get_command_argument(6, arg, length=inlen, status=iostatus)
         read(arg,*,iostat=iostatus,iomsg=iomessage)PJ_phi0
         if (iostatus.ne.0) then
-          write(error_unit,*)"ERROR: could not read comand-line argument (6)"
+          write(error_unit,*)"ERROR: could not read command-line argument (6)"
           write(error_unit,*)" PJ_phi0 = ",PJ_phi0
           write(error_unit,*)iomessage
           stop 1
@@ -176,7 +176,7 @@
         call get_command_argument(7, arg, length=inlen, status=iostatus)
         read(arg,*,iostat=iostatus,iomsg=iomessage)PJ_k0
         if (iostatus.ne.0) then
-          write(error_unit,*)"ERROR: could not read comand-line argument (7)"
+          write(error_unit,*)"ERROR: could not read command-line argument (7)"
           write(error_unit,*)" PJ_k0 = ",PJ_k0
           write(error_unit,*)iomessage
           stop 1
@@ -184,7 +184,7 @@
         call get_command_argument(8, arg, length=inlen, status=iostatus)
         read(arg,*,iostat=iostatus,iomsg=iomessage)PJ_Re
         if (iostatus.ne.0) then
-          write(error_unit,*)"ERROR: could not read comand-line argument (8)"
+          write(error_unit,*)"ERROR: could not read command-line argument (8)"
           write(error_unit,*)" PJ_Re = ",PJ_Re
           write(error_unit,*)iomessage
           stop 1
@@ -219,7 +219,7 @@
         call get_command_argument(5, arg, length=inlen, status=iostatus)
         read(arg,*,iostat=iostatus,iomsg=iomessage)PJ_lam0
         if (iostatus.ne.0) then
-          write(error_unit,*)"ERROR: could not read comand-line argument (5)"
+          write(error_unit,*)"ERROR: could not read command-line argument (5)"
           write(error_unit,*)" PJ_lam0 = ",PJ_lam0
           write(error_unit,*)iomessage
           stop 1
@@ -227,7 +227,7 @@
         call get_command_argument(6, arg, length=inlen, status=iostatus)
         read(arg,*,iostat=iostatus,iomsg=iomessage)PJ_phi0
         if (iostatus.ne.0) then
-          write(error_unit,*)"ERROR: could not read comand-line argument (6)"
+          write(error_unit,*)"ERROR: could not read command-line argument (6)"
           write(error_unit,*)" PJ_phi0 = ",PJ_phi0
           write(error_unit,*)iomessage
           stop 1
@@ -235,7 +235,7 @@
         call get_command_argument(7, arg, length=inlen, status=iostatus)
         read(arg,*,iostat=iostatus,iomsg=iomessage)PJ_phi1
         if (iostatus.ne.0) then
-          write(error_unit,*)"ERROR: could not read comand-line argument (7)"
+          write(error_unit,*)"ERROR: could not read command-line argument (7)"
           write(error_unit,*)" PJ_phi1 = ",PJ_phi1
           write(error_unit,*)iomessage
           stop 1
@@ -243,7 +243,7 @@
         call get_command_argument(8, arg, length=inlen, status=iostatus)
         read(arg,*,iostat=iostatus,iomsg=iomessage)PJ_phi2
         if (iostatus.ne.0) then
-          write(error_unit,*)"ERROR: could not read comand-line argument (8)"
+          write(error_unit,*)"ERROR: could not read command-line argument (8)"
           write(error_unit,*)" PJ_phi2 = ",PJ_phi2
           write(error_unit,*)iomessage
           stop 1
@@ -251,7 +251,7 @@
         call get_command_argument(9, arg, length=inlen, status=iostatus)
         read(arg,*,iostat=iostatus,iomsg=iomessage)PJ_Re
         if (iostatus.ne.0) then
-          write(error_unit,*)"ERROR: could not read comand-line argument (9)"
+          write(error_unit,*)"ERROR: could not read command-line argument (9)"
           write(error_unit,*)" PJ_Re = ",PJ_Re
           write(error_unit,*)iomessage
           stop 1
@@ -267,7 +267,7 @@
         call get_command_argument(5, arg, length=inlen, status=iostatus)
         read(arg,*,iostat=iostatus,iomsg=iomessage)PJ_lam0
         if (iostatus.ne.0) then
-          write(error_unit,*)"ERROR: could not read comand-line argument (5)"
+          write(error_unit,*)"ERROR: could not read command-line argument (5)"
           write(error_unit,*)" PJ_lam0 = ",PJ_lam0
           write(error_unit,*)iomessage
           stop 1
@@ -275,7 +275,7 @@
         call get_command_argument(6, arg, length=inlen, status=iostatus)
         read(arg,*,iostat=iostatus,iomsg=iomessage)PJ_phi0
         if (iostatus.ne.0) then
-          write(error_unit,*)"ERROR: could not read comand-line argument (6)"
+          write(error_unit,*)"ERROR: could not read command-line argument (6)"
           write(error_unit,*)" PJ_phi0 = ",PJ_phi0
           write(error_unit,*)iomessage
           stop 1
@@ -283,7 +283,7 @@
         call get_command_argument(7, arg, length=inlen, status=iostatus)
         read(arg,*,iostat=iostatus,iomsg=iomessage)PJ_Re
         if (iostatus.ne.0) then
-          write(error_unit,*)"ERROR: could not read comand-line argument (7)"
+          write(error_unit,*)"ERROR: could not read command-line argument (7)"
           write(error_unit,*)" PJ_Re = ",PJ_Re
           write(error_unit,*)iomessage
           stop 1
@@ -292,13 +292,13 @@
       end select
 
       if (ProjDir.eq.1) then
-        ! Forward Projection: assumming inx,iny are lon,lat
+        ! Forward Projection: assuming inx,iny are lon,lat
         call PJ_proj_for(inx,iny, &
                        PJ_iprojflag,&
                        PJ_lam0,PJ_phi0,PJ_phi1,PJ_phi2,PJ_k0,PJ_Re,&
                        outx,outy)
       else
-        ! Inverse Projection: assumming inx,iny are x,y
+        ! Inverse Projection: assuming inx,iny are x,y
         call PJ_proj_inv(inx,iny, &
                        PJ_iprojflag,&
                        PJ_lam0,PJ_phi0,PJ_phi1,PJ_phi2,PJ_k0,PJ_Re,&
