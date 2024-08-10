@@ -1,5 +1,6 @@
 ###############################################################################
 ##########  AMD Optimizing C/C++/Fortran Compiler (aocc) ######################
+
 FCHOME = /opt/AMD/aocc-compiler-4.0.0
 FC = $(FCHOME)/bin/flang
 COMPINC = -I$(FCHOME)/include
@@ -10,10 +11,12 @@ LIBS = $(COMPLIBS) $(COMPINC)
 ifeq ($(RUN), DEBUG)
     FFLAGS = -O0 -g3 -Wall -Mstandard -fPIC -v
 endif
+
 # Profiling flags
 ifeq ($(RUN), PROF)
     FFLAGS = -g2 -pg -fPIC
 endif
+
 # Production run flags
 ifeq ($(RUN), OPT)
     #FFLAGS = -O3 -zopt -ftz -w -ipo
@@ -24,4 +27,5 @@ endif
 FPPFLAGS =  -Mpreprocess
   # Extra flags
 EXFLAGS =
+
 ###############################################################################
