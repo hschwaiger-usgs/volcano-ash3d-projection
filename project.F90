@@ -6,7 +6,7 @@
          input_unit,output_unit,error_unit
 
       use projection,      only : &
-         PJ_ilatlonflag,PJ_iprojflag,PJ_k0,PJ_lam0,PJ_lam1,PJ_lam2,PJ_phi0,PJ_phi1,PJ_phi2,PJ_Re,&
+         PJ_ilatlonflag,PJ_iprojflag,PJ_k0,PJ_lam0,PJ_phi0,PJ_phi1,PJ_phi2,PJ_Re,&
            PJ_Set_Proj_Params, &
            PJ_proj_for, &
            PJ_proj_inv
@@ -139,8 +139,6 @@
       PJ_k0    = 0.0_8
       PJ_Re    = 6371.229_8
       PJ_lam0  = 0.0_8
-      PJ_lam1  = 0.0_8
-      PJ_lam2  = 0.0_8
       PJ_phi0  = 0.0_8
       PJ_phi1  = 0.0_8
       PJ_phi2  = 0.0_8
