@@ -78,8 +78,8 @@
       character(len=20) :: buffer
       integer           :: inorth,izone
 
-      integer :: iostatus
-      character(len=120) :: iomessage
+      integer            :: iostatus
+      character(len=120) :: iomessage = ""
 
       ! Initialize values
       PJ_k0     = 1.0_8
