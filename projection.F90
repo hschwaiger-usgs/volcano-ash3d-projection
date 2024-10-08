@@ -175,7 +175,7 @@
           stop 1
         endif
         if (PJ_Re.le.5000.0_8.or.PJ_Re.ge.7000.0_8) then
-          write(error_unit,*)"PJ ERROR:  PJ_ should around 6300 km, not ",PJ_Re
+          write(error_unit,*)"PJ ERROR:  PJ_Re should around 6300 km, not ",PJ_Re
           stop 1
         endif
 
