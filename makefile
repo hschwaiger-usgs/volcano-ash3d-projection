@@ -32,7 +32,7 @@
 #
 #  SYSTEM specifies which compiler to use
 #    Current available options are:
-#      gfortran , ifort , aocc
+#      gfortran , ifort , aocc , nvhpc
 #    This variable cannot be left blank
 #
 SYSTEM = gfortran
@@ -60,6 +60,7 @@ INSTALLDIR=/opt/USGS
 #  GNU Fortran Compiler
 #  Intel Fortran Compiler
 #  AMD Optimizing C/C++/Fortran Compiler (aocc)
+#  Nvidia HPC Fortran Compiler (ncfortran)
 include $(SYSINC)
 ###############################################################################
 
