@@ -3,9 +3,52 @@
     "name": "projection",
     "organization": "U.S. Geological Survey",
     "description": "projection is a fortran 90 module that contain subroutines that can convert between lon,lat and various projections commonly used in numerical weather prediction forecast/reanalysis products.",
-    "version": "1.0.0",
+    "version": "master",
     "status": "Development",
 
+    "permissions": {
+      "usageType": "openSource",
+      "licenses": [
+        {
+          "name": "Public Domain, CC0-1.0",
+          "URL": "https://code.usgs.gov/vsc/ash3d/volcano-ash3d-projection/-/raw/master/LICENSE.md"
+        }
+      ]
+    },
+
+    "homepageURL": "https://code.usgs.gov/vsc/ash3d/volcano-ash3d-projection/",
+    "downloadURL": "https://code.usgs.gov/vsc/ash3d/volcano-ash3d-projection/-/archive/master/volcano-ash3d-projection-master.zip",
+    "disclaimerURL": "https://code.usgs.gov/vsc/ash3d/volcano-ash3d-projection/-/raw/master/DISCLAIMER.md",
+    "repositoryURL": "https://code.usgs.gov/vsc/ash3d/volcano-ash3d-projection.git",
+    "vcs": "git",
+
+    "laborHours": 0,
+
+    "tags": [
+      "USGS",
+      "Ash3d",
+      "AVOG2S"
+    ],
+
+    "languages": [
+      "fortran"
+    ],
+
+    "contact": {
+      "name": "Hans F. Schwaiger",
+      "email": "hschwaiger@usgs.gov"
+    },
+
+    "date": {
+      "metadataLastUpdated": "2024-10-22"
+    }
+  },
+  {
+    "name": "projection",
+    "organization": "U.S. Geological Survey",
+    "description": "projection is a fortran 90 module that contain subroutines that can convert between lon,lat and various projections commonly used in numerical weather prediction forecast/reanalysis products.",
+    "version": "1.0.0",
+    "status": "Development",
     "permissions": {
       "usageType": "openSource",
       "licenses": [
@@ -40,7 +83,7 @@
     },
 
     "date": {
-      "metadataLastUpdated": "2024-07-25"
+      "metadataLastUpdated": "2024-10-22"
     }
   }
 ]
