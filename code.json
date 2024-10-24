@@ -3,30 +3,31 @@
     "name": "projection",
     "organization": "U.S. Geological Survey",
     "description": "projection is a fortran 90 module that contain subroutines that can convert between lon,lat and various projections commonly used in numerical weather prediction forecast/reanalysis products.",
-    "version": "1.0.0",
-    "status": "Release Candidate",
+    "version": "master",
+    "status": "Development",
 
     "permissions": {
       "usageType": "openSource",
       "licenses": [
         {
           "name": "Public Domain, CC0-1.0",
-          "URL": "https://github.com/DOI-USGS/volcano-ash3d-projection/blob/master/LICENSE.md"
+          "URL": "https://code.usgs.gov/vsc/ash3d/volcano-ash3d-projection/-/raw/master/LICENSE.md"
         }
       ]
     },
 
-    "homepageURL": "https://github.com/DOI-USGS/volcano-ash3d-projection/",
-    "downloadURL": "https://github.com/DOI-USGS/volcano-ash3d-projection/archive/master.zip",
-    "disclaimerURL": "https://github.com/DOI-USGS/volcano-ash3d-projection/blob/master/DISCLAIMER.md",
-    "repositoryURL": "https://github.com/DOI-USGS/volcano-ash3d-projection.git",
+    "homepageURL": "https://code.usgs.gov/vsc/ash3d/volcano-ash3d-projection/",
+    "downloadURL": "https://code.usgs.gov/vsc/ash3d/volcano-ash3d-projection/-/archive/master/volcano-ash3d-projection-master.zip",
+    "disclaimerURL": "https://code.usgs.gov/vsc/ash3d/volcano-ash3d-projection/-/raw/master/DISCLAIMER.md",
+    "repositoryURL": "https://code.usgs.gov/vsc/ash3d/volcano-ash3d-projection.git",
     "vcs": "git",
 
     "laborHours": 0,
 
     "tags": [
+      "USGS",
       "Ash3d",
-      "USGS"
+      "AVOG2S"
     ],
 
     "languages": [
@@ -39,7 +40,50 @@
     },
 
     "date": {
-      "metadataLastUpdated": "2019-02-05"
+      "metadataLastUpdated": "2024-10-22"
+    }
+  },
+  {
+    "name": "projection",
+    "organization": "U.S. Geological Survey",
+    "description": "projection is a fortran 90 module that contain subroutines that can convert between lon,lat and various projections commonly used in numerical weather prediction forecast/reanalysis products.",
+    "version": "1.0.0",
+    "status": "Production",
+    "permissions": {
+      "usageType": "openSource",
+      "licenses": [
+        {
+          "name": "Public Domain, CC0-1.0",
+          "URL": "https://code.usgs.gov/vsc/ash3d/volcano-ash3d-projection/-/raw/1.0.0/LICENSE.md"
+        }
+      ]
+    },
+
+    "homepageURL": "https://code.usgs.gov/vsc/ash3d/volcano-ash3d-projection/",
+    "downloadURL": "https://code.usgs.gov/vsc/ash3d/volcano-ash3d-projection/-/archive/1.0.0/volcano-ash3d-projection-1.0.0.zip",
+    "disclaimerURL": "https://code.usgs.gov/vsc/ash3d/volcano-ash3d-projection/-/raw/1.0.0/DISCLAIMER.md",
+    "repositoryURL": "https://code.usgs.gov/vsc/ash3d/volcano-ash3d-projection.git",
+    "vcs": "git",
+
+    "laborHours": 0,
+
+    "tags": [
+      "USGS",
+      "Ash3d",
+      "AVOG2S"
+    ],
+
+    "languages": [
+      "fortran"
+    ],
+
+    "contact": {
+      "name": "Hans F. Schwaiger",
+      "email": "hschwaiger@usgs.gov"
+    },
+
+    "date": {
+      "metadataLastUpdated": "2024-10-22"
     }
   }
 ]
