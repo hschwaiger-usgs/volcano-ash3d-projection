@@ -461,7 +461,7 @@
         !   earth_R = radius of spherical Earth
         if (abs(lat_0).lt.90.0_8) then  !  NOTE: this projection only works if lat_0=+-90.
           write(error_unit,3)lat_0
-3         format('Sorry, lproj only works for polar stereographic',/, &
+3         format('Sorry, PJ_proj_for only works for polar stereographic',/, &
                          'projection when lat_0=+-90.',/, &
                          'lat_0 = ',f15.4,/, &
                          'Program stopped.')
