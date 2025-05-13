@@ -10,12 +10,13 @@ GREEN='\033[0;32m'
 NC='\033[0m' # No Color
 
 rc=0
+# Assume we do not have proj installed
+HaveProj="F"
+# Now check if it exists and flag if found
 which proj > /dev/null
 rc=$((rc + $?))
 if [[ "$rc" -gt 0 ]] ; then
   HaveProj="T"
-else
-  HaveProj="F"
 fi
 
 rm -f tst1.dat tst2.dat tst3.dat
