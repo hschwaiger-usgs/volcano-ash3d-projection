@@ -5,14 +5,14 @@
 !      Larry G. Mastin (lgmastin@usgs.gov), and Roger P. Denlinger (roger@usgs.gov).
 !
 !      The model and its source code are products of the U.S. Federal Government and therefore
-!      bear no copyright.  They may be copied, redistributed and freely incorporated 
+!      bear no copyright.  They may be copied, redistributed and freely incorporated
 !      into derivative products.  However as a matter of scientific courtesy we ask that
 !      you credit the authors and cite published documentation of this model (below) when
 !      publishing or distributing derivative products.
 !
 !      Schwaiger, H.F., Denlinger, R.P., and Mastin, L.G., 2012, Ash3d, a finite-
 !         volume, conservative numerical model for ash transport and tephra deposition,
-!         Journal of Geophysical Research, 117, B04204, doi:10.1029/2011JB008968. 
+!         Journal of Geophysical Research, 117, B04204, doi:10.1029/2011JB008968.
 !
 !      Although this program has been used by the USGS, no warranty, expressed or
 !      implied, is made by the USGS or the United States Government as to the accuracy
@@ -35,10 +35,10 @@
       module projection
 
       ! This module requires Fortran 2003 or later
-      use iso_fortran_env, only : &
+      use, intrinsic :: iso_fortran_env, only : &
          input_unit,output_unit,error_unit
 
-      implicit none
+      implicit none (type, external)
 
         ! Set everything to private by default
       private
@@ -46,14 +46,18 @@
         ! Publicly available subroutines/functions
       public PJ_Set_Proj_Params,PJ_proj_for,PJ_proj_inv
 
+        ! These single and double precision parameters should be 4 and 8
+      integer, parameter :: sp = selected_real_kind( 6,   37) ! single precision
+      integer, parameter :: dp = selected_real_kind(15,  307) ! double precision
+
         ! Publicly available variables
 #include "PJ_version.h"
-      integer     ,public :: PJ_ilatlonflag
-      integer     ,public :: PJ_iprojflag
-      real(kind=8),public :: PJ_k0  = 1.0_8        ! scale factor; PS often uses 0.933_8
-      real(kind=8),public :: PJ_Re  = 6371.229_8
-      real(kind=8),public :: PJ_lam0,PJ_lam1,PJ_lam2
-      real(kind=8),public :: PJ_phi0,PJ_phi1,PJ_phi2
+      integer      ,public :: PJ_ilatlonflag
+      integer      ,public :: PJ_iprojflag
+      real(kind=dp),public :: PJ_k0  = 1.0_dp        ! scale factor; PS often uses 0.933_dp
+      real(kind=dp),public :: PJ_Re  = 6371.229_dp
+      real(kind=dp),public :: PJ_lam0,PJ_lam1,PJ_lam2
+      real(kind=dp),public :: PJ_phi0,PJ_phi1,PJ_phi2
 
       character(len=20), dimension(8) :: params
 
@@ -79,20 +83,22 @@
       integer           :: inorth,izone
 
       integer            :: iostatus
-      character(len=120) :: iomessage = ""
+      character(len=120) :: iomessage
 
       ! Initialize values
-      PJ_k0     = 1.0_8
-      PJ_Re     = 6371.229_8
-      PJ_lam0   = 0.0_8
-      PJ_lam1   = 0.0_8
-      PJ_lam2   = 0.0_8
-      PJ_phi0   = 0.0_8
-      PJ_phi1   = 0.0_8
-      PJ_phi2   = 0.0_8
+      PJ_k0     = 1.0_dp
+      PJ_Re     = 6371.229_dp
+      PJ_lam0   = 0.0_dp
+      PJ_lam1   = 0.0_dp
+      PJ_lam2   = 0.0_dp
+      PJ_phi0   = 0.0_dp
+      PJ_phi1   = 0.0_dp
+      PJ_phi2   = 0.0_dp
+
+      iomessage = ""
 
       read(linebuffer,*,iostat=iostatus,iomsg=iomessage)PJ_ilatlonflag
-      if (iostatus.ne.0) then
+      if (iostatus /= 0) then
         write(error_unit,*)'PJ ERROR:  Error reading projection line'
         write(error_unit,*)'           Expecting to read: PJ_ilatlonflag (int)'
         write(error_unit,*)'           From the following projection line: '
@@ -101,13 +107,13 @@
         write(error_unit,*)iomessage
         stop 1
       endif
-      if (PJ_ilatlonflag.eq.1) then
+      if (PJ_ilatlonflag == 1) then
         ! coordinates are in lon/lat
         return
-      elseif (PJ_ilatlonflag.eq.0) then
+      elseif (PJ_ilatlonflag == 0) then
         ! coordinates are projected, read the projection flag
         read(linebuffer,*,iostat=iostatus,iomsg=iomessage)PJ_ilatlonflag,PJ_iprojflag
-        if (iostatus.ne.0) then
+        if (iostatus /= 0) then
           write(error_unit,*)'PJ ERROR:  Error reading projection line'
           write(error_unit,*)'           Expecting to read: PJ_ilatlonflag, PJ_iprojflag'
           write(error_unit,*)'           From the following projection line: '
@@ -116,9 +122,9 @@
           write(error_unit,*)iomessage
           stop 1
         endif
-        if (PJ_iprojflag.ne.0.and.PJ_iprojflag.ne.1.and. &
-           PJ_iprojflag.ne.2.and.PJ_iprojflag.ne.3.and. &
-           PJ_iprojflag.ne.4.and.PJ_iprojflag.ne.5) then
+        if (PJ_iprojflag /= 0.and.PJ_iprojflag /= 1.and. &
+           PJ_iprojflag /= 2.and.PJ_iprojflag /= 3.and. &
+           PJ_iprojflag /= 4.and.PJ_iprojflag /= 5) then
           write(error_unit,*)"Unrecognized projection flag"
           stop 1
         endif
@@ -132,14 +138,14 @@
 
       case(0)
         ! Non-geographic projection, (x,y) only
-      PJ_k0     = 1.0_8
-      PJ_Re     = 6371.229_8
-      PJ_lam0   = 0.0_8
-      PJ_lam1   = 0.0_8
-      PJ_lam2   = 0.0_8
-      PJ_phi0   = 0.0_8
-      PJ_phi1   = 0.0_8
-      PJ_phi2   = 0.0_8
+      PJ_k0     = 1.0_dp
+      PJ_Re     = 6371.229_dp
+      PJ_lam0   = 0.0_dp
+      PJ_lam1   = 0.0_dp
+      PJ_lam2   = 0.0_dp
+      PJ_phi0   = 0.0_dp
+      PJ_phi1   = 0.0_dp
+      PJ_phi2   = 0.0_dp
 
       write(output_unit,*)"Both PJ_ilatlonflag and PJ_iprojflag are 0"
       write(output_unit,*)"No geographic projection used"
@@ -147,7 +153,7 @@
       case(1)
         ! Polar stereographic
         read(linebuffer,*,iostat=iostatus,iomsg=iomessage)PJ_ilatlonflag,PJ_iprojflag,PJ_lam0,PJ_phi0,PJ_k0,PJ_Re
-        if (iostatus.ne.0) then
+        if (iostatus /= 0) then
           write(error_unit,*)'PJ ERROR:  Error reading projection line for Polar Stereographic'
           write(error_unit,*)'           Expecting to read: '
           write(error_unit,*)'           PJ_ilatlonflag,PJ_iprojflag,PJ_lam0,PJ_phi0,PJ_k0,PJ_Re'
@@ -157,24 +163,24 @@
           write(error_unit,*)iomessage
           stop 1
         endif
-        if (abs(PJ_lam0).gt.360.0_8) then
+        if (abs(PJ_lam0) > 360.0_dp) then
           write(error_unit,*)"PJ ERROR:  PJ_lam0 should be in in range -360 - 360"
           write(error_unit,*)"   lam0 = ",PJ_lam0
           stop 1
         endif
-        if (abs(PJ_phi0).gt.90.0_8) then
+        if (abs(PJ_phi0) > 90.0_dp) then
           write(error_unit,*)"PJ ERROR:  PJ_phi0 should be in in range -90 - 30"
           write(error_unit,*)"   PJ_phi0 = ",PJ_phi0
           stop 1
         endif
         PJ_phi1 = PJ_phi0
         PJ_phi2 = PJ_phi0
-        if (PJ_k0.le.0.0_8) then
+        if (PJ_k0 <= 0.0_dp) then
           write(error_unit,*)"PJ ERROR:  PJ_k0 should > 0"
           write(error_unit,*)"   PJ_k0 = ",PJ_k0
           stop 1
         endif
-        if (PJ_Re.le.5000.0_8.or.PJ_Re.ge.7000.0_8) then
+        if (PJ_Re <= 5000.0_dp.or.PJ_Re >= 7000.0_dp) then
           write(error_unit,*)"PJ ERROR:  PJ_Re should around 6300 km, not ",PJ_Re
           stop 1
         endif
@@ -200,7 +206,7 @@
         ! Albers Equal Area
         write(error_unit,*)"WARNING: Albers not yet verified"
         read(linebuffer,*,iostat=iostatus,iomsg=iomessage)PJ_ilatlonflag,PJ_iprojflag,PJ_lam0,PJ_phi0,PJ_phi1,PJ_phi2
-        if (iostatus.ne.0) then
+        if (iostatus /= 0) then
           write(error_unit,*)'PJ ERROR:  Error reading projection line for Albers Equal Area'
           write(error_unit,*)'           Expecting to read: '
           write(error_unit,*)'           PJ_ilatlonflag,PJ_iprojflag,PJ_lam0,PJ_phi0,PJ_phi1,PJ_phi2'
@@ -210,12 +216,12 @@
           write(error_unit,*)iomessage
           stop 1
         endif
-        if (abs(PJ_lam0).gt.360.0_8) then
+        if (abs(PJ_lam0) > 360.0_dp) then
           write(error_unit,*)"PJ ERROR:  PJ_lam0 should be in in range -360 - 360"
           write(error_unit,*)"   PJ_lam0 = ",PJ_lam0
           stop 1
         endif
-        if (abs(PJ_phi0).gt.90.0_8.or.abs(PJ_phi1).gt.90.0_8.or.abs(PJ_phi2).gt.90.0_8) then
+        if (abs(PJ_phi0) > 90.0_dp.or.abs(PJ_phi1) > 90.0_dp.or.abs(PJ_phi2) > 90.0_dp) then
           write(error_unit,*) &
             "PJ ERROR:  PJ_phi0,1,2 should each be in in range -90 - 90"
           write(error_unit,*)" PJ_phi0,1,2 = ",PJ_phi0,PJ_phi1,PJ_phi2
@@ -243,7 +249,7 @@
         ! UTM
         write(error_unit,*)"WARNING: UTM not yet verified"
         read(linebuffer,*,iostat=iostatus,iomsg=iomessage)PJ_ilatlonflag,PJ_iprojflag,izone,inorth
-        if (iostatus.ne.0) then
+        if (iostatus /= 0) then
           write(error_unit,*)'PJ ERROR:  Error reading projection line for UTM'
           write(error_unit,*)'           Expecting to read: '
           write(error_unit,*)'           PJ_ilatlonflag,PJ_iprojflag,izone,inorth'
@@ -253,12 +259,12 @@
           write(error_unit,*)iomessage
           stop 1
         endif
-        if (izone.le.0.or.izone.gt.60) then
+        if (izone <= 0 .or. izone > 60) then
           write(error_unit,*)"PJ ERROR:  izone should be in in range 1 - 60"
           write(error_unit,*)"   izone = ",izone
           stop 1
         endif
-        if (inorth.ne.0.and.inorth.ne.1) then
+        if (inorth /= 0 .and. inorth /= 1) then
           write(error_unit,*)"PJ ERROR:  inorth should be either 0 or 1"
           write(error_unit,*)"   inorth = ",inorth
           stop 1
@@ -268,7 +274,7 @@
         params(1) = buffer
         write(buffer,222)izone
         params(2) = buffer
-        if (inorth.eq.1) then
+        if (inorth == 1) then
           write(buffer,224)
         else
           write(buffer,223)"+south"
@@ -291,7 +297,7 @@
         ! Lambert conformal conic (NARR, NAM218, NAM221)
         read(linebuffer,*,iostat=iostatus,iomsg=iomessage)PJ_ilatlonflag,PJ_iprojflag,PJ_lam0, &
                           PJ_phi0,PJ_phi1,PJ_phi2,PJ_Re
-        if (iostatus.ne.0) then
+        if (iostatus /= 0) then
           write(error_unit,*)'PJ ERROR:  Error reading projection line for Lambert Conformal Conic'
           write(error_unit,*)'           Expecting to read: '
           write(error_unit,*)'           PJ_ilatlonflag,PJ_iprojflag,PJ_lam0,PJ_phi0,PJ_phi1,PJ_phi2,PJ_Re'
@@ -301,18 +307,21 @@
           write(error_unit,*)iomessage
           stop 1
         endif
-        if (abs(PJ_lam0).gt.360.0_8) then
+        if (abs(PJ_lam0) > 360.0_dp) then
           write(error_unit,*)"PJ ERROR:  PJ_lam0 should be in in range -360 - 360"
           write(error_unit,*)"   PJ_lam0 = ",PJ_lam0
           stop 1
         endif
-        if (abs(PJ_phi0).gt.90.0_8.or.abs(PJ_phi1).gt.90.0_8.or.abs(PJ_phi2).gt.90.0_8) then
+        if (abs(PJ_phi0) > 90.0_dp .or. &
+            abs(PJ_phi1) > 90.0_dp .or. &
+            abs(PJ_phi2) > 90.0_dp) then
           write(error_unit,*) &
             "PJ ERROR:  PJ_phi0,1,2 should each be in in range -90 - 90"
           write(error_unit,*)"   PJ_phi0,1,2 = ",PJ_phi0,PJ_phi1,PJ_phi2
           stop 1
         endif
-        if (PJ_Re.le.5000.0_8.or.PJ_Re.ge.7000.0_8) then
+        if (PJ_Re <= 5000.0_dp .or. &
+            PJ_Re >= 7000.0_dp) then
           write(error_unit,*)"PJ ERROR:  PJ_ should around 6300 km, not ",PJ_Re
           stop 1
         endif
@@ -339,7 +348,7 @@
       case(5)
         ! Mercator (NAM196)
         read(linebuffer,*,iostat=iostatus,iomsg=iomessage)PJ_ilatlonflag,PJ_iprojflag,PJ_lam0,PJ_phi0,PJ_Re
-        if (iostatus.ne.0) then
+        if (iostatus /= 0) then
           write(error_unit,*)'PJ ERROR:  Error reading projection line for Mercator'
           write(error_unit,*)'           Expecting to read: '
           write(error_unit,*)'           PJ_ilatlonflag,PJ_iprojflag,PJ_lam0,PJ_phi0,PJ_Re'
@@ -349,18 +358,19 @@
           write(error_unit,*)iomessage
           stop 1
         endif
-        if (abs(PJ_lam0).gt.360.0_8) then
+        if (abs(PJ_lam0) > 360.0_dp) then
           write(error_unit,*)"PJ ERROR:  PJ_lam0 should be in in range -360 - 360"
           write(error_unit,*)"   PJ_lam0 = ",PJ_lam0
           stop 1
         endif
-        if (abs(PJ_phi0).gt.90.0_8) then
+        if (abs(PJ_phi0) > 90.0_dp) then
           write(error_unit,*) &
             "PJ ERROR:  PJ_phi0 should each be in in range -90 - 90"
           write(error_unit,*)"   PJ_phi0 = ",PJ_phi0
           stop 1
         endif
-        if (PJ_Re.le.5000.0_8.or.PJ_Re.ge.7000.0_8) then
+        if (PJ_Re <= 5000.0_dp .or. &
+            PJ_Re >= 7000.0_dp) then
           write(error_unit,*)"PJ ERROR:  PJ_ should around 6300 km, not ",PJ_Re
           stop 1
         endif
@@ -402,55 +412,55 @@
                        iprojflag,lon_0,lat_0,lat_1,lat_2,k_0,earth_R, &
                        x_out,y_out)
 
-      real(kind=8), parameter :: PI        = 3.141592653589793_8
-      real(kind=8), parameter :: DEG2RAD   = 1.7453292519943295e-2_8
-      !real(kind=8), parameter :: RAD2DEG   = 5.72957795130823e1_8
+      real(kind=dp), parameter :: PI        = 3.141592653589793_dp
+      real(kind=dp), parameter :: DEG2RAD   = 1.7453292519943295e-2_dp
+      !real(kind=dp), parameter :: RAD2DEG   = 5.72957795130823e1_dp
 
-      real(kind=8),intent(in)  :: lon_in    ! input lon to convert
-      real(kind=8),intent(in)  :: lat_in    ! input lat to convert
+      real(kind=dp),intent(in)  :: lon_in    ! input lon to convert
+      real(kind=dp),intent(in)  :: lat_in    ! input lat to convert
       integer     ,intent(in)  :: iprojflag ! projection ID
-      real(kind=8),intent(in)  :: lon_0     ! central meridian
-      real(kind=8),intent(in)  :: lat_0     ! latitude parameters used
-      real(kind=8),intent(in)  :: lat_1     !   by the projection, not
-      real(kind=8),intent(in)  :: lat_2     !   all are needed
-      real(kind=8),intent(in)  :: k_0       ! scaling factor
-      real(kind=8),intent(in)  :: earth_R   ! radius of earth (km)
-      real(kind=8),intent(out) :: x_out     ! output coordinates
-      real(kind=8),intent(out) :: y_out     ! 
+      real(kind=dp),intent(in)  :: lon_0     ! central meridian
+      real(kind=dp),intent(in)  :: lat_0     ! latitude parameters used
+      real(kind=dp),intent(in)  :: lat_1     !   by the projection, not
+      real(kind=dp),intent(in)  :: lat_2     !   all are needed
+      real(kind=dp),intent(in)  :: k_0       ! scaling factor
+      real(kind=dp),intent(in)  :: earth_R   ! radius of earth (km)
+      real(kind=dp),intent(out) :: x_out     ! output coordinates
+      real(kind=dp),intent(out) :: y_out     !
 
-      real(kind=8)  :: lon_in_wrap ! Locally-used lon values that are wrapped
-      real(kind=8)  :: lon_0_wrap !  to the range 0-360
+      real(kind=dp)  :: lon_in_wrap ! Locally-used lon values that are wrapped
+      real(kind=dp)  :: lon_0_wrap !  to the range 0-360
 
-      real(kind=8) :: k_eq,k_s
-      real(kind=8) :: F
-      real(kind=8) :: tmp_arg
-      real(kind=8) :: n_exp
-      real(kind=8) :: rho,rho_0,theta
-      real(kind=8) :: zproj
+      real(kind=dp) :: k_eq,k_s
+      real(kind=dp) :: F
+      real(kind=dp) :: tmp_arg
+      real(kind=dp) :: n_exp
+      real(kind=dp) :: rho,rho_0,theta
+      real(kind=dp) :: zproj
 
       ! First, convert all longitudes to the range 0<lon<=360
-      if (lon_in.le.  0.0_8) then
-        lon_in_wrap = lon_in + 360.0_8
-      elseif (lon_in.gt.360.0_8) then
-        lon_in_wrap = lon_in - 360.0_8
+      if (lon_in <= 0.0_dp) then
+        lon_in_wrap = lon_in + 360.0_dp
+      elseif (lon_in > 360.0_dp) then
+        lon_in_wrap = lon_in - 360.0_dp
       else
         lon_in_wrap = lon_in
       endif
-      if (lon_0 .le.  0.0_8) then
-        lon_0_wrap = lon_0  + 360.0_8
-      elseif (lon_0 .gt.360.0_8) then
-        lon_0_wrap = lon_0  - 360.0_8
+      if (lon_0 <= 0.0_dp) then
+        lon_0_wrap = lon_0  + 360.0_dp
+      elseif (lon_0 > 360.0_dp) then
+        lon_0_wrap = lon_0  - 360.0_dp
       else
-        lon_0_wrap = lon_0 
+        lon_0_wrap = lon_0
       endif
 
-      if (iprojflag.eq.0) then
+      if (iprojflag == 0) then
         write(error_unit,*)&
         'PJ: PJ_proj_for was called for non-geographic coordinates'
         write(error_unit,*)&
         '    Check the calling program.'
         stop 1
-      elseif (iprojflag.eq.1) then
+      elseif (iprojflag == 1) then
         ! Polar stereographic
         !    http://mathworld.wolfram.com/StereographicProjection.html
         ! Parameters required:
@@ -459,7 +469,7 @@
         !   lat_1 = truelat (latitude where the projection plane intersects globe (usually 90 or -90))
         !   k_0   = scale factor
         !   earth_R = radius of spherical Earth
-        if (abs(lat_0).lt.90.0_8) then  !  NOTE: this projection only works if lat_0=+-90.
+        if (abs(lat_0) < 90.0_dp) then  !  NOTE: this projection only works if lat_0=+-90.
           write(error_unit,3)lat_0
 3         format('Sorry, PJ_proj_for only works for polar stereographic',/, &
                          'projection when lat_0=+-90.',/, &
@@ -467,73 +477,73 @@
                          'Program stopped.')
           stop 1
         endif
-        if (abs(lat_1-lat_0).gt.0.01_8) then
+        if (abs(lat_1-lat_0) > 0.01_dp) then
           ! A true latitude is given instead of k_0; overwriting k_0
-          k_s=(1.0_8-sin(lat_1*DEG2RAD))*0.5_8
+          k_s=(1.0_dp-sin(lat_1*DEG2RAD))*0.5_dp
         else
           k_s = k_0
         endif
 
-        if (lat_0.gt.0.0_8) then
+        if (lat_0 > 0.0_dp) then
           ! North Polar Stereographic projection
             ! Using Eq. 21-5 and 21.6 of Snyder, 1987
             ! (https://pubs.er.usgs.gov/publication/pp1395)
-          zproj   = k_s*2.0_8*earth_R
+          zproj   = k_s*2.0_dp*earth_R
           theta   = (lon_in_wrap-lon_0_wrap)*DEG2RAD
-          if (theta.le.-PI)theta = theta + 2.0_8*PI
-          if (theta.gt. PI)theta = theta - 2.0_8*PI
-          x_out =  zproj*tan(0.25_8*PI-0.5_8*lat_in*DEG2RAD)*sin(theta)
-          y_out = -zproj*tan(0.25_8*PI-0.5_8*lat_in*DEG2RAD)*cos(theta)
+          if (theta <= -PI) theta = theta + 2.0_dp*PI
+          if (theta >   PI) theta = theta - 2.0_dp*PI
+          x_out =  zproj*tan(0.25_dp*PI-0.5_dp*lat_in*DEG2RAD)*sin(theta)
+          y_out = -zproj*tan(0.25_dp*PI-0.5_dp*lat_in*DEG2RAD)*cos(theta)
         else
           ! South Polar Stereographic projection
             ! Using Eq. 21-9 and 21.10 of Snyder, 1987
             ! (https://pubs.er.usgs.gov/publication/pp1395)
-          zproj   = k_s*2.0_8*earth_R
+          zproj   = k_s*2.0_dp*earth_R
           theta   = (lon_in_wrap-lon_0_wrap)*DEG2RAD
-          if (theta.le.-PI)theta = theta + 2.0_8*PI
-          if (theta.gt. PI)theta = theta - 2.0_8*PI
-          x_out =  zproj*tan(0.25_8*PI+0.5_8*lat_in*DEG2RAD)*sin(theta)
-          y_out =  zproj*tan(0.25_8*PI+0.5_8*lat_in*DEG2RAD)*cos(theta)
+          if (theta <= -PI) theta = theta + 2.0_dp*PI
+          if (theta >   PI) theta = theta - 2.0_dp*PI
+          x_out =  zproj*tan(0.25_dp*PI+0.5_dp*lat_in*DEG2RAD)*sin(theta)
+          y_out =  zproj*tan(0.25_dp*PI+0.5_dp*lat_in*DEG2RAD)*cos(theta)
         endif
-      elseif (iprojflag.eq.2) then
+      elseif (iprojflag == 2) then
         ! Albers Equal Area
         write(error_unit,*)"WARNING: Albers not yet verified"
         stop 1
-      elseif (iprojflag.eq.3) then
+      elseif (iprojflag == 3) then
         ! UTM
         write(error_unit,*)"WARNING: UTM not yet verified"
         stop 1
-      elseif (iprojflag.eq.4) then
+      elseif (iprojflag == 4) then
         ! Lambert conformal conic (NARR, NAM218, NAM221)
 
          !These formulas were taken from the wikipedia article on lcc
          !also given in the Wolfram page
          !http://mathworld.wolfram.com/LambertConformalConicProjection.html
-        if (abs(lat_1-lat_2).gt.1.0e-05_8) then
+        if (abs(lat_1-lat_2) > 1.0e-05_dp) then
           n_exp  = log(cos(DEG2RAD*lat_1)/cos(DEG2RAD*lat_2)) / &
-                      log(tan(PI/4.0_8+DEG2RAD*lat_2/2.0_8) / &
-                      tan(PI/4.0_8+DEG2RAD*lat_1/2.0_8))
+                      log(tan(PI/4.0_dp+DEG2RAD*lat_2/2.0_dp) / &
+                      tan(PI/4.0_dp+DEG2RAD*lat_1/2.0_dp))
         else
           ! n_exp is singular when lat_1 = lat_2
           ! Applying l'Hopital's rule
-          n_exp = 2.0_8*tan(DEG2RAD*lat_1) * &
-                           sin(PI/4.0_8+DEG2RAD*lat_1/2.0_8) * &
-                           cos(PI/4.0_8+DEG2RAD*lat_1/2.0_8)
+          n_exp = 2.0_dp*tan(DEG2RAD*lat_1) * &
+                           sin(PI/4.0_dp+DEG2RAD*lat_1/2.0_dp) * &
+                           cos(PI/4.0_dp+DEG2RAD*lat_1/2.0_dp)
           !n_exp = 0.42261826174069944 !for 25 degrees
           !n_exp = 0.76604444311897824 !for 50 degrees
         endif
-        F     = cos(DEG2RAD*lat_1)*(tan(PI/4.0_8+DEG2RAD*lat_1/2.0_8))**n_exp/n_exp
-        rho   = F/(tan(PI/4.0_8+DEG2RAD*lat_in/2.0_8))**n_exp
-        rho_0 = F/(tan(PI/4.0_8+DEG2RAD*lat_0/2.0_8))**n_exp
+        F     = cos(DEG2RAD*lat_1)*(tan(PI/4.0_dp+DEG2RAD*lat_1/2.0_dp))**n_exp/n_exp
+        rho   = F/(tan(PI/4.0_dp+DEG2RAD*lat_in/2.0_dp))**n_exp
+        rho_0 = F/(tan(PI/4.0_dp+DEG2RAD*lat_0/2.0_dp))**n_exp
         x_out = earth_R*rho*sin(n_exp*(DEG2RAD*(lon_in_wrap-lon_0_wrap)))
         y_out = earth_R*(rho_0-rho*cos(n_exp*DEG2RAD*(lon_in_wrap-lon_0_wrap)))
-      elseif (iprojflag.eq.5) then
+      elseif (iprojflag == 5) then
         ! Mercator
         !  http://mathworld.wolfram.com/MercatorProjection.html
         !   These are equations 7-1 and 7-2 of Snyder
         k_eq = cos(lat_0*DEG2RAD)
         x_out = earth_R*(lon_in_wrap-lon_0_wrap)*DEG2RAD*k_eq
-        tmp_arg = (45.0_8 + 0.5_8*lat_in)*DEG2RAD
+        tmp_arg = (45.0_dp + 0.5_dp*lat_in)*DEG2RAD
         y_out = earth_R*(log(tan(tmp_arg)))*k_eq
       else
         write(error_unit,*)&
@@ -557,49 +567,49 @@
                            iprojflag,lon_0,lat_0,lat_1,lat_2,k_0,earth_R, &
                            lon_out,lat_out)
 
-      real(kind=8), parameter :: PI        = 3.141592653589793_8
-      real(kind=8), parameter :: DEG2RAD   = 1.7453292519943295e-2_8
-      real(kind=8), parameter :: RAD2DEG   = 5.72957795130823e1_8
+      real(kind=dp), parameter :: PI        = 3.141592653589793_dp
+      real(kind=dp), parameter :: DEG2RAD   = 1.7453292519943295e-2_dp
+      real(kind=dp), parameter :: RAD2DEG   = 5.72957795130823e1_dp
 
-      real(kind=8),intent(in)  :: x_in        ! input coordinates
-      real(kind=8),intent(in)  :: y_in        ! 
-      integer     ,intent(in)  :: iprojflag   ! projection ID
-      real(kind=8),intent(in)  :: lon_0       ! central meridian
-      real(kind=8),intent(in)  :: lat_0       ! latitude parameters used
-      real(kind=8),intent(in)  :: lat_1       !   by the projection, not
-      real(kind=8),intent(in)  :: lat_2       !   all are needed
-      real(kind=8),intent(in)  :: k_0         ! scaling factor
-      real(kind=8),intent(in)  :: earth_R     ! radius of earth (km)
-      real(kind=8),intent(out) :: lon_out     ! output longitude
-      real(kind=8),intent(out) :: lat_out     ! output latitude
+      real(kind=dp),intent(in)  :: x_in        ! input coordinates
+      real(kind=dp),intent(in)  :: y_in        !
+      integer      ,intent(in)  :: iprojflag   ! projection ID
+      real(kind=dp),intent(in)  :: lon_0       ! central meridian
+      real(kind=dp),intent(in)  :: lat_0       ! latitude parameters used
+      real(kind=dp),intent(in)  :: lat_1       !   by the projection, not
+      real(kind=dp),intent(in)  :: lat_2       !   all are needed
+      real(kind=dp),intent(in)  :: k_0         ! scaling factor
+      real(kind=dp),intent(in)  :: earth_R     ! radius of earth (km)
+      real(kind=dp),intent(out) :: lon_out     ! output longitude
+      real(kind=dp),intent(out) :: lat_out     ! output latitude
 
-      real(kind=8)  ::  lon_0_wrap !  to the range 0-360
+      real(kind=dp) ::  lon_0_wrap !  to the range 0-360
 
-      real(kind=8) :: k_eq,k_s
-      real(kind=8) :: F
-      real(kind=8) :: tmp_arg
-      real(kind=8) :: n_exp,rho,rho_0,theta
-      real(kind=8) :: c_fac
+      real(kind=dp) :: k_eq,k_s
+      real(kind=dp) :: F
+      real(kind=dp) :: tmp_arg
+      real(kind=dp) :: n_exp,rho,rho_0,theta
+      real(kind=dp) :: c_fac
 
       ! First, convert input longitude to the range 0<lon<=360
-      if (lon_0 .le.  0.0_8) then
-        lon_0_wrap = lon_0  + 360.0_8
-      elseif (lon_0 .gt.360.0_8) then
-        lon_0_wrap = lon_0  - 360.0_8
+      if (lon_0 <= 0.0_dp) then
+        lon_0_wrap = lon_0  + 360.0_dp
+      elseif (lon_0 > 360.0_dp) then
+        lon_0_wrap = lon_0  - 360.0_dp
       else
         lon_0_wrap = lon_0
       endif
 
-      if (iprojflag.eq.0) then
+      if (iprojflag == 0) then
         write(error_unit,*)&
         'PJ: PJ_proj_for was called for non-geographic coordinates'
         write(error_unit,*)&
         '    Check the calling program.'
         stop 1
-      elseif (iprojflag.eq.1) then
+      elseif (iprojflag == 1) then
         ! Polar stereographic
         !    http://mathworld.wolfram.com/StereographicProjection.html
-        if (abs(lat_0).lt.90.0_8) then  !  NOTE: this projection only works if lat_0=+-90.
+        if (abs(lat_0) < 90.0_dp) then  !  NOTE: this projection only works if lat_0=+-90.
           write(error_unit,3)
 3         format('Sorry, lproj only works for polar stereographic',/, &
                          'projection when lat_0=+-90.',/, &
@@ -607,14 +617,14 @@
                          'Program stopped.')
           stop 1
         endif
-        if (abs(lat_1-lat_0).gt.0.01_8) then
+        if (abs(lat_1-lat_0) > 0.01_dp) then
           ! A true latitude is given instead of k_0; overwriting k_0
-          k_s=(1.0_8-sin(lat_1*DEG2RAD))*0.5_8
+          k_s=(1.0_dp-sin(lat_1*DEG2RAD))*0.5_dp
         else
           k_s = k_0
         endif
 
-        if (lat_0.gt.0.0_8) then
+        if (lat_0 > 0.0_dp) then
           ! North Polar Stereographic projection
           theta   = atan2(x_in,-y_in)  ! Eq 20-16 of Snyder, 1987
         else
@@ -624,59 +634,59 @@
 
         lon_out = theta*RAD2DEG + lon_0_wrap
         rho   = sqrt(x_in*x_in+y_in*y_in)          ! Eq 20-18 of Snyder, 1987 (p159)
-        c_fac = 2.0_8*atan2(rho,k_s*2.0_8*earth_R) ! Eq 21-15 of Snyder, 1987 (p159)
+        c_fac = 2.0_dp*atan2(rho,k_s*2.0_dp*earth_R) ! Eq 21-15 of Snyder, 1987 (p159)
             ! Eq. 20-14 of Snyder, 1987 (p158)
           !lat_out = asin(     cos(c_fac)*sin(lat_0*DEG2RAD) + &
           !               y_in*sin(c_fac)*cos(lat_0*DEG2RAD)/rho)
-        if (lat_0.gt.0.0_8) then
+        if (lat_0 > 0.0_dp) then
           ! North Polar Stereographic projection
           lat_out = asin(     cos(c_fac)) * RAD2DEG
         else
           ! South Polar Stereographic projection
-          lat_out = -1.0_8*asin(     cos(c_fac)) * RAD2DEG
+          lat_out = -1.0_dp*asin(     cos(c_fac)) * RAD2DEG
         endif
-        if (lon_out.lt.  0.0_8) lon_out=lon_out+360.0_8
-        if (lon_out.gt.360.0_8) lon_out=lon_out-360.0_8
+        if (lon_out <   0.0_dp) lon_out=lon_out+360.0_dp
+        if (lon_out > 360.0_dp) lon_out=lon_out-360.0_dp
 
-      elseif (iprojflag.eq.2) then
+      elseif (iprojflag == 2) then
         ! Albers Equal Area
         write(error_unit,*)"WARNING: Albers not yet verified"
         stop 1
-      elseif (iprojflag.eq.3) then
+      elseif (iprojflag == 3) then
         ! UTM
         write(error_unit,*)"WARNING: UTM not yet verified"
         stop 1
-      elseif (iprojflag.eq.4) then
+      elseif (iprojflag == 4) then
         ! Lambert conformal conic (NARR, NAM218, NAM221)
         !These formulas were taken from the wikipedia article on lcc
         !also given in the Wolfram page
         !http://mathworld.wolfram.com/LambertConformalConicProjection.html
-        if (abs(lat_1-lat_2).gt.1.0e-05_8) then
+        if (abs(lat_1-lat_2) > 1.0e-05_dp) then
           n_exp  = log(cos(DEG2RAD*lat_1)/cos(DEG2RAD*lat_2)) / &
-                     log(tan(PI/4.0_8+DEG2RAD*lat_2/2.0_8) / &
-                     tan(PI/4.0_8+DEG2RAD*lat_1/2.0_8))
+                     log(tan(PI/4.0_dp+DEG2RAD*lat_2/2.0_dp) / &
+                     tan(PI/4.0_dp+DEG2RAD*lat_1/2.0_dp))
         else
           ! n_exp is singular when lat_1 = lat_2
           ! Applying l'Hopital's rule
-          n_exp = 2.0_8*tan(DEG2RAD*lat_1) * &
-                           sin(PI/4.0_8+DEG2RAD*lat_1/2.0_8) * &
-                           cos(PI/4.0_8+DEG2RAD*lat_1/2.0_8)
+          n_exp = 2.0_dp*tan(DEG2RAD*lat_1) * &
+                           sin(PI/4.0_dp+DEG2RAD*lat_1/2.0_dp) * &
+                           cos(PI/4.0_dp+DEG2RAD*lat_1/2.0_dp)
           !n_exp = 0.42261826174069944 !for 25 degrees
           !n_exp = 0.76604444311897824 !for 50 degrees
         endif
-        F     = cos(DEG2RAD*lat_1)*(tan(PI/4.0_8+DEG2RAD*lat_1/2.0_8))**n_exp/n_exp
-        rho_0 = F/(tan(PI/4.0_8+DEG2RAD*lat_0/2.0_8))**n_exp
+        F     = cos(DEG2RAD*lat_1)*(tan(PI/4.0_dp+DEG2RAD*lat_1/2.0_dp))**n_exp/n_exp
+        rho_0 = F/(tan(PI/4.0_dp+DEG2RAD*lat_0/2.0_dp))**n_exp
         theta = atan(x_in/(earth_R*rho_0-y_in))
-        rho   = sign(sqrt((x_in/earth_R)**2.0_8+(rho_0-(y_in/earth_R))**2.0_8),n_exp)
-        lat_out  = RAD2DEG*2.0_8*atan((F/rho)**(1.0_8/n_exp))-90.0_8
+        rho   = sign(sqrt((x_in/earth_R)**2.0_dp+(rho_0-(y_in/earth_R))**2.0_dp),n_exp)
+        lat_out  = RAD2DEG*2.0_dp*atan((F/rho)**(1.0_dp/n_exp))-90.0_dp
         lon_out  = lon_0_wrap+RAD2DEG*theta/n_exp
-      elseif (iprojflag.eq.5) then
+      elseif (iprojflag == 5) then
         ! Mercator
         !  http://mathworld.wolfram.com/MercatorProjection.html
         k_eq = cos(lat_0*DEG2RAD)
         lon_out = (lon_0_wrap*DEG2RAD + x_in/(earth_R*k_eq))/DEG2RAD
         tmp_arg = exp(y_in/(earth_R*k_eq))
-        lat_out = 2.0_8*atan(tmp_arg)/DEG2RAD - 90.0_8
+        lat_out = 2.0_dp*atan(tmp_arg)/DEG2RAD - 90.0_dp
       else
         write(error_unit,*) &
         'Sorry, iprojflag is not 1,2,3,4, or 5.  I do not know what to do'
@@ -684,8 +694,8 @@
       endif
 
       ! Lastly, convert output longitude to the range 0<lon<=360
-      if (lon_out.le.  0.0_8) lon_out = lon_out + 360.0_8
-      if (lon_out.gt.360.0_8) lon_out = lon_out - 360.0_8
+      if (lon_out <=   0.0_dp) lon_out = lon_out + 360.0_dp
+      if (lon_out >  360.0_dp) lon_out = lon_out - 360.0_dp
 
       return
 

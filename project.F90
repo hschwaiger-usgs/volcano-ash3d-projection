@@ -2,7 +2,7 @@
       program project
 
       ! This module requires Fortran 2003 or later
-      use iso_fortran_env, only : &
+      use, intrinsic :: iso_fortran_env, only : &
          input_unit,output_unit,error_unit
 
       use projection,      only : &
@@ -11,7 +11,11 @@
            PJ_proj_for, &
            PJ_proj_inv
 
-      implicit none
+      implicit none (type, external)
+
+        ! These single and double precision parameters should be 4 and 8
+      integer, parameter :: sp = selected_real_kind( 6,   37) ! single precision
+      integer, parameter :: dp = selected_real_kind(15,  307) ! double precision
 
       integer             :: nargs
       integer             :: iostatus
@@ -19,25 +23,25 @@
       character(len=120)  :: iomessage
       character(len=100)  :: arg
 
-      real(kind=8)  :: inx    ! input lon or x to convert
-      real(kind=8)  :: iny    ! input lat or y to convert
-      real(kind=8)  :: outx   ! output lon or x returned
-      real(kind=8)  :: outy   ! output lat or y returned
+      real(kind=dp)  :: inx    ! input lon or x to convert
+      real(kind=dp)  :: iny    ! input lat or y to convert
+      real(kind=dp)  :: outx   ! output lon or x returned
+      real(kind=dp)  :: outy   ! output lat or y returned
 
       integer :: ProjDir
 
         ! CONUS 3.0-km Lambert Conformal
-        ! 0 4 262.5 38.5 38.5 38.5 6371.229    #Proj flags and params  
+        ! 0 4 262.5 38.5 38.5 38.5 6371.229    #Proj flags and params
         ! proj +proj=lcc +lon_0=262.5 +lat_0=38.5 +lat_1=38.5 +lat_2=38.5 +R=6371.229
 
         ! CONUS 40-km Lambert Conformal and
         ! CONUS 12-km Lambert Conformal and
         ! CONUS 5.079-km Lambert Conformal
-        ! 0 4 265.0 25.0 25.0 25.0 6371.229    #Proj flags and params                  
+        ! 0 4 265.0 25.0 25.0 25.0 6371.229    #Proj flags and params
         ! proj +proj=lcc +lon_0=265.0 +lat_0=25.0 +lat_1=25.0 +lat_2=25.0 +R=6371.229
 
         ! NAM 32-km Lambert Conformal used by NARR (used PJ_Re=6367.470, not 6371.229)
-        ! 0 4 -107.0 50.0 50.0 50.0 6367.47    #Proj flags and params  
+        ! 0 4 -107.0 50.0 50.0 50.0 6367.47    #Proj flags and params
         ! proj +proj=lcc +lon_0=-107.0 +lat_0=50.0 +lat_1=50.0 +lat_2=50.0 +R=6367.47
 
         ! NAM 32-km Lambert Conformal
@@ -69,7 +73,7 @@
       ProjDir = -1
 #endif
 
-      if (ProjDir.eq.0) then
+      if (ProjDir == 0) then
         write(error_unit,*)"project.F90 must be compiled with either -DFORWARD or -DINVERSE"
         write(error_unit,*)"Forward or inverse not set"
         stop 1
@@ -77,14 +81,14 @@
 
 !     TEST READ COMMAND LINE ARGUMENTS
       nargs = command_argument_count()
-      if (nargs.lt.4) then
+      if (nargs < 4) then
         write(error_unit,*)"ERROR: Too few arguments. Enter lon lat IsLatLon ProjFlag ..."
         stop 1
       endif
 
       call get_command_argument(number=1, value=arg, length=inlen, status=iostatus)
       read(arg,*,iostat=iostatus,iomsg=iomessage)inx
-      if (iostatus.ne.0) then
+      if (iostatus /= 0) then
         write(error_unit,*)"ERROR: could not read command-line argument (1)"
         write(error_unit,*)" inx = ",inx
         write(error_unit,*)iomessage
@@ -92,7 +96,7 @@
       endif
       call get_command_argument(number=2, value=arg, length=inlen, status=iostatus)
       read(arg,*,iostat=iostatus,iomsg=iomessage)iny
-      if (iostatus.ne.0) then
+      if (iostatus /= 0) then
         write(error_unit,*)"ERROR: could not read command-line argument (2)"
         write(error_unit,*)" iny = ",iny
         write(error_unit,*)iomessage
@@ -100,29 +104,29 @@
       endif
       call get_command_argument(number=3, value=arg, length=inlen, status=iostatus)
       read(arg,*,iostat=iostatus,iomsg=iomessage)PJ_ilatlonflag
-      if (iostatus.ne.0) then
+      if (iostatus /= 0) then
         write(error_unit,*)"ERROR: could not read command-line argument (3)"
         write(error_unit,*)" PJ_ilatlonflag = ",PJ_ilatlonflag
         write(error_unit,*)iomessage
         stop 1
       endif
 
-      if (PJ_ilatlonflag.eq.1) then
+      if (PJ_ilatlonflag == 1) then
         ! coordinates are in lon/lat
         stop 0
-      elseif (PJ_ilatlonflag.eq.0) then
+      elseif (PJ_ilatlonflag == 0) then
         ! coordinates are projected, read the projection flag
         call get_command_argument(number=4, value=arg, length=inlen, status=iostatus)
         read(arg,*,iostat=iostatus,iomsg=iomessage)PJ_iprojflag
-        if (iostatus.ne.0) then
+        if (iostatus /= 0) then
           write(error_unit,*)"ERROR: could not read command-line argument (4)"
           write(error_unit,*)" PJ_iprojflag = ",PJ_iprojflag
           write(error_unit,*)iomessage
           stop 1
         endif
-        if (PJ_iprojflag.ne.0.and.PJ_iprojflag.ne.1.and. &
-           PJ_iprojflag.ne.2.and.PJ_iprojflag.ne.3.and. &
-           PJ_iprojflag.ne.4.and.PJ_iprojflag.ne.5) then
+        if (PJ_iprojflag /= 0.and.PJ_iprojflag /= 1.and. &
+            PJ_iprojflag /= 2.and.PJ_iprojflag /= 3.and. &
+            PJ_iprojflag /= 4.and.PJ_iprojflag /= 5) then
           write(error_unit,*)"Unrecognized projection flag"
           stop 1
         endif
@@ -136,26 +140,26 @@
 
       case(0)
         ! Non-geographic projection, (x,y) only
-      PJ_k0    = 0.0_8
-      PJ_Re    = 6371.229_8
-      PJ_lam0  = 0.0_8
-      PJ_phi0  = 0.0_8
-      PJ_phi1  = 0.0_8
-      PJ_phi2  = 0.0_8
+        PJ_k0    = 0.0_dp
+        PJ_Re    = 6371.229_dp
+        PJ_lam0  = 0.0_dp
+        PJ_phi0  = 0.0_dp
+        PJ_phi1  = 0.0_dp
+        PJ_phi2  = 0.0_dp
 
-      write(output_unit,*)"Both PJ_ilatlonflag and PJ_iprojflag are 0"
-      write(output_unit,*)"No geographic projection used"
+        write(output_unit,*)"Both PJ_ilatlonflag and PJ_iprojflag are 0"
+        write(output_unit,*)"No geographic projection used"
 
       case(1)
         ! Polar stereographic
         !read(linebuffer,*)PJ_ilatlonflag,PJ_iprojflag,PJ_lam0,PJ_phi0,PJ_k0,PJ_Re
-        if (nargs.lt.8) then
+        if (nargs < 8) then
           write(error_unit,*)"Enter lon lat IsLatLon ProjFlag lam0 phi0 k0 radius"
           stop 1
         endif
         call get_command_argument(number=5, value=arg, length=inlen, status=iostatus)
         read(arg,*,iostat=iostatus,iomsg=iomessage)PJ_lam0
-        if (iostatus.ne.0) then
+        if (iostatus /= 0) then
           write(error_unit,*)"ERROR: could not read command-line argument (5)"
           write(error_unit,*)" PJ_lam0 = ",PJ_lam0
           write(error_unit,*)iomessage
@@ -163,7 +167,7 @@
         endif
         call get_command_argument(number=6, value=arg, length=inlen, status=iostatus)
         read(arg,*,iostat=iostatus,iomsg=iomessage)PJ_phi0
-        if (iostatus.ne.0) then
+        if (iostatus /= 0) then
           write(error_unit,*)"ERROR: could not read command-line argument (6)"
           write(error_unit,*)" PJ_phi0 = ",PJ_phi0
           write(error_unit,*)iomessage
@@ -173,7 +177,7 @@
                            ! determined by k0
         call get_command_argument(number=7, value=arg, length=inlen, status=iostatus)
         read(arg,*,iostat=iostatus,iomsg=iomessage)PJ_k0
-        if (iostatus.ne.0) then
+        if (iostatus /= 0) then
           write(error_unit,*)"ERROR: could not read command-line argument (7)"
           write(error_unit,*)" PJ_k0 = ",PJ_k0
           write(error_unit,*)iomessage
@@ -181,7 +185,7 @@
         endif
         call get_command_argument(number=8, value=arg, length=inlen, status=iostatus)
         read(arg,*,iostat=iostatus,iomsg=iomessage)PJ_Re
-        if (iostatus.ne.0) then
+        if (iostatus /= 0) then
           write(error_unit,*)"ERROR: could not read command-line argument (8)"
           write(error_unit,*)" PJ_Re = ",PJ_Re
           write(error_unit,*)iomessage
@@ -192,7 +196,7 @@
         ! Albers Equal Area
         write(output_unit,*)"WARNING: Albers not yet verified"
         !read(linebuffer,*)PJ_ilatlonflag,PJ_iprojflag,PJ_lam0,PJ_phi0,PJ_phi1,PJ_phi2
-        if (nargs.lt.8) then
+        if (nargs < 8) then
           write(error_unit,*)"Enter lon lat IsLatLon ProjFlag lam0 phi0 phi1 phi2"
           stop 1
         endif
@@ -201,7 +205,7 @@
         ! UTM
         write(output_unit,*)"WARNING: UTM not yet verified"
         !read(linebuffer,*)PJ_ilatlonflag,PJ_iprojflag,izone,inorth
-        if (nargs.lt.6) then
+        if (nargs < 6) then
           write(error_unit,*)"Enter lon lat IsLatLon ProjFlag izone inorth"
           stop 1
         endif
@@ -210,13 +214,13 @@
         ! Lambert conformal conic (NARR, NAM218, NAM221)
         !read(linebuffer,*)PJ_ilatlonflag,PJ_iprojflag,PJ_lam0, &
         !                  PJ_phi0,PJ_phi1,PJ_phi2,PJ_Re
-        if (nargs.lt.9) then
+        if (nargs < 9) then
           write(error_unit,*)"Enter lon lat IsLatLon ProjFlag lam0 phi0 phi1 phi2 radius"
           stop 1
         endif
         call get_command_argument(number=5, value=arg, length=inlen, status=iostatus)
         read(arg,*,iostat=iostatus,iomsg=iomessage)PJ_lam0
-        if (iostatus.ne.0) then
+        if (iostatus /= 0) then
           write(error_unit,*)"ERROR: could not read command-line argument (5)"
           write(error_unit,*)" PJ_lam0 = ",PJ_lam0
           write(error_unit,*)iomessage
@@ -224,7 +228,7 @@
         endif
         call get_command_argument(number=6, value=arg, length=inlen, status=iostatus)
         read(arg,*,iostat=iostatus,iomsg=iomessage)PJ_phi0
-        if (iostatus.ne.0) then
+        if (iostatus /= 0) then
           write(error_unit,*)"ERROR: could not read command-line argument (6)"
           write(error_unit,*)" PJ_phi0 = ",PJ_phi0
           write(error_unit,*)iomessage
@@ -232,7 +236,7 @@
         endif
         call get_command_argument(number=7, value=arg, length=inlen, status=iostatus)
         read(arg,*,iostat=iostatus,iomsg=iomessage)PJ_phi1
-        if (iostatus.ne.0) then
+        if (iostatus /= 0) then
           write(error_unit,*)"ERROR: could not read command-line argument (7)"
           write(error_unit,*)" PJ_phi1 = ",PJ_phi1
           write(error_unit,*)iomessage
@@ -240,7 +244,7 @@
         endif
         call get_command_argument(number=8, value=arg, length=inlen, status=iostatus)
         read(arg,*,iostat=iostatus,iomsg=iomessage)PJ_phi2
-        if (iostatus.ne.0) then
+        if (iostatus /= 0) then
           write(error_unit,*)"ERROR: could not read command-line argument (8)"
           write(error_unit,*)" PJ_phi2 = ",PJ_phi2
           write(error_unit,*)iomessage
@@ -248,7 +252,7 @@
         endif
         call get_command_argument(number=9, value=arg, length=inlen, status=iostatus)
         read(arg,*,iostat=iostatus,iomsg=iomessage)PJ_Re
-        if (iostatus.ne.0) then
+        if (iostatus /= 0) then
           write(error_unit,*)"ERROR: could not read command-line argument (9)"
           write(error_unit,*)" PJ_Re = ",PJ_Re
           write(error_unit,*)iomessage
@@ -258,13 +262,13 @@
       case(5)
         ! Mercator (NAM196)
         !read(linebuffer,*)PJ_ilatlonflag,PJ_iprojflag,PJ_lam0,PJ_phi0,PJ_Rd
-        if (nargs.lt.7) then
+        if (nargs < 7) then
           write(error_unit,*)"Enter lon lat IsLatLon ProjFlag lam0 phi0 radius"
           stop 1
         endif
         call get_command_argument(number=5, value=arg, length=inlen, status=iostatus)
         read(arg,*,iostat=iostatus,iomsg=iomessage)PJ_lam0
-        if (iostatus.ne.0) then
+        if (iostatus /= 0) then
           write(error_unit,*)"ERROR: could not read command-line argument (5)"
           write(error_unit,*)" PJ_lam0 = ",PJ_lam0
           write(error_unit,*)iomessage
@@ -272,7 +276,7 @@
         endif
         call get_command_argument(number=6, value=arg, length=inlen, status=iostatus)
         read(arg,*,iostat=iostatus,iomsg=iomessage)PJ_phi0
-        if (iostatus.ne.0) then
+        if (iostatus /= 0) then
           write(error_unit,*)"ERROR: could not read command-line argument (6)"
           write(error_unit,*)" PJ_phi0 = ",PJ_phi0
           write(error_unit,*)iomessage
@@ -280,16 +284,29 @@
         endif
         call get_command_argument(number=7, value=arg, length=inlen, status=iostatus)
         read(arg,*,iostat=iostatus,iomsg=iomessage)PJ_Re
-        if (iostatus.ne.0) then
+        if (iostatus /= 0) then
           write(error_unit,*)"ERROR: could not read command-line argument (7)"
           write(error_unit,*)" PJ_Re = ",PJ_Re
           write(error_unit,*)iomessage
           stop 1
         endif
 
+      case default
+        ! Non-geographic projection, (x,y) only
+        ! We shouldn't actually be here due to the error-check above
+        PJ_k0    = 0.0_dp
+        PJ_Re    = 6371.229_dp
+        PJ_lam0  = 0.0_dp
+        PJ_phi0  = 0.0_dp
+        PJ_phi1  = 0.0_dp
+        PJ_phi2  = 0.0_dp
+
+        write(output_unit,*)"PJ_ilatlonflag =0 and PJ_iprojflag is none of 0-5."
+        write(output_unit,*)"No geographic projection used"
+
       end select
 
-      if (ProjDir.eq.1) then
+      if (ProjDir == 1) then
         ! Forward Projection: assuming inx,iny are lon,lat
         call PJ_proj_for(inx,iny, &
                        PJ_iprojflag,&
