@@ -11,10 +11,11 @@
            PJ_proj_for, &
            PJ_proj_inv
 
-      implicit none (type, external)
+      implicit none
+      !implicit none (type, external)
 
         ! These single and double precision parameters should be 4 and 8
-      integer, parameter :: sp = selected_real_kind( 6,   37) ! single precision
+      !integer, parameter :: sp = selected_real_kind( 6,   37) ! single precision
       integer, parameter :: dp = selected_real_kind(15,  307) ! double precision
 
       integer             :: nargs

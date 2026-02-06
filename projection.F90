@@ -36,9 +36,10 @@
 
       ! This module requires Fortran 2003 or later
       use, intrinsic :: iso_fortran_env, only : &
-         input_unit,output_unit,error_unit
+         real32,real64,input_unit,output_unit,error_unit
 
-      implicit none (type, external)
+      implicit none
+      !implicit none (type, external)
 
         ! Set everything to private by default
       private
@@ -47,8 +48,8 @@
       public PJ_Set_Proj_Params,PJ_proj_for,PJ_proj_inv
 
         ! These single and double precision parameters should be 4 and 8
-      integer, parameter :: sp = selected_real_kind( 6,   37) ! single precision
-      integer, parameter :: dp = selected_real_kind(15,  307) ! double precision
+      integer, parameter :: sp = real32  ! selected_real_kind( 6,   37) ! single precision
+      integer, parameter :: dp = real64  ! selected_real_kind(15,  307) ! double precision
 
         ! Publicly available variables
 #include "PJ_version.h"
@@ -73,7 +74,6 @@
 !     the parameters that define the projection are set.
 !
 !##############################################################################
-
 
       subroutine PJ_Set_Proj_Params(linebuffer)
 
