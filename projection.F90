@@ -86,6 +86,7 @@
       character(len=120) :: iomessage
 
       ! Initialize values
+      PJ_iprojflag = 0
       PJ_k0     = 1.0_dp
       PJ_Re     = 6371.229_dp
       PJ_lam0   = 0.0_dp
